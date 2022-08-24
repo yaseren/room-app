@@ -1,9 +1,9 @@
-
+import Room from "./components/Room/Room"
 
 const App = ()=>{
     return (
-
         <div className="page-content">
+              <Room server='wss://media.setup-infra.ir'  room='1004'  />
         <div className="join-call">
             <div className="join-video">
                 
