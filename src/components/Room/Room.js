@@ -13,49 +13,87 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../theme'
-const Room = ({roomName,nickname}) => {
+const Room = ({ roomName, nickname }) => {
     return (
 
         <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth={false} style={{height:'98%' , overflow:'hidden'}} >
-            <CssBaseline />
-            <Box
-            maxWidth="xlg"
-                sx={{
-                    marginTop: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    borderRadius: 2,
-                    boxShadow:3,            
-                    padding: 5,
-                    backgroundColor: theme.palette.primary.dark,
-                    height:'80%',color:theme.palette.text.light
-                                  
-                }}
-            >
-             This is main pan
-            </Box>
-            <Box
-           maxWidth="xs"
-                sx={{
-                    marginTop: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    borderRadius: 2,
-                    boxShadow:3,            
-                    padding: 5,
-                    backgroundColor: theme.palette.primary.dark,
-                    height:'5%',color:theme.palette.text.light,
-                   
-                                  
-                }}
-            >
-               This is tool bar
-            </Box>    
-        </Container>
-    </ThemeProvider>
+            <Grid container sx={{ flexGrow: 1 }} height style={{ overflow: "hidden" }} >
+                <Grid xs={12} md={9} sx={{
+                    height: '80%',
+                    p: 1
+                }}>
+                    <Box
+                        maxWidth="xlg"
+                        sx={{
+                            marginTop: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            borderRadius: 2,
+                            boxShadow: 3,
+                            padding: 1,
+                            m: 1,
+                            backgroundColor: theme.palette.primary.dark,
+                            color: theme.palette.text.light
+
+                        }}
+                        height
+                    >
+                        This is main pan
+                    </Box>
+                </Grid>
+                <Grid xs={12} md={3} sx={{
+                    height: '80%',
+                    p: 1
+                }}>
+                    <Box
+                        maxWidth="xlg"
+                        sx={{
+                            marginTop: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            borderRadius: 2,
+                            boxShadow: 3,
+                            padding: 3,
+                            m: 1,
+                            backgroundColor: theme.palette.primary.dark,
+                            color: theme.palette.text.light
+
+                        }}
+                        height
+                    >
+                        This is user adn chat pan
+                    </Box>
+                </Grid>
+                <Grid xs={12} md={12} sx={{}} height >
+                    <Box
+                      
+                        sx={{
+
+                            display: 'flex',
+                            //flexDirection: 'row',
+                            alignItems: 'center',
+                            borderRadius: 2,
+                            boxShadow: 0,
+                            m: 2,
+
+                            backgroundColor: theme.palette.primary.dark,
+                            color: theme.palette.text.light,
+                            height: 100
+
+
+                        }}
+
+                    >
+
+                        This is tool pan
+
+                    </Box>
+                </Grid>
+
+            </Grid>
+        </ThemeProvider>
 
     )
 
