@@ -7,6 +7,8 @@ import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import CloudIcon from '@mui/icons-material/Cloud';
 import CloudOffIcon from '@mui/icons-material/CloudOff';
 import Typography from '@mui/material/Typography';
@@ -14,10 +16,32 @@ import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../theme'
 const Room = ({ roomName, nickname }) => {
+
+    const [contextMenu, setContextMenu] = React.useState(null);
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
+        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null,
+    );
+  };
+
+  const handleClose = () => {
+    setContextMenu(null);
+  };
+
     return (
 
         <ThemeProvider theme={theme}>
-            <Grid container sx={{ flexGrow: 1 }} height style={{ overflow: "hidden" }} >
+            <Grid container sx={{ flexGrow: 1 }} height style={{ overflow: "hidden" }} onContextMenu={handleContextMenu} >
                 <Grid xs={12} md={9} sx={{
                     height: '80%',
                     p: 1
@@ -93,6 +117,23 @@ const Room = ({ roomName, nickname }) => {
                 </Grid>
 
             </Grid>
+        
+            <Menu
+        open={contextMenu !== null}
+        onClose={handleClose}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+      >
+        <MenuItem onClick={handleClose}>Refresh</MenuItem>
+        <MenuItem onClick={handleClose}>Print</MenuItem>
+        <MenuItem onClick={handleClose}>Full Screen</MenuItem>
+        <MenuItem onClick={handleClose}>Close</MenuItem>
+      </Menu>
+    
         </ThemeProvider>
 
     )
