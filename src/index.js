@@ -2,7 +2,7 @@
 import ReactDom from 'react-dom'
 
 import App from "./App"
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import {theme} from './theme'
 
 

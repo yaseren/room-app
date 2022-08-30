@@ -1,5 +1,5 @@
 
-import { blue } from "@mui/material/colors"
+
 import { createTheme } from "@mui/material/styles"
 
 export const theme = createTheme({
@@ -7,6 +7,8 @@ export const theme = createTheme({
     primary: {
       // light: will be calculated from palette.primary.main,
       main: '#333555',
+      lighter: '#7d7f998a',
+
       // dark: will be calculated from palette.primary.main,
       // contrastText: will be calculated to contrast with palette.primary.main
     },

@@ -1,41 +1,51 @@
-import { styled } from '@mui/material/styles';
 
-import Grid from '@mui/material/Grid';
-
-import RoomHeader from "./components/Header/RoomHeader";
-import UsersList from "./components/UsersList/UsersList";
-import ChatPanel from "./components/ChatPanel/ChatPanel";
-import MainPanel from "./components/MainPanel/MainPanel";
-import RoomFooter from "./components/Footer/RoomFooter";
+import { useState, useRef } from 'react'
+import Login from "./components/Login/Login";
+import Room from "./components/Room/Room";
 
 
 const App = () => {
-   return (
- 
-         <Grid container spacing={1} padding={2} >
-            <Grid setHight  md={12} xs={12}>
+   const [authenticated,setauthenticated]=useState(true);
+   let room, linkIsValid;
+   const urlPath = window.location.pathname.toLocaleLowerCase().split('/');
 
-               <RoomHeader></RoomHeader>
-            </Grid>
+   if (urlPath[1].startsWith('ch-')) {
+      //گرفتن اطلاعات اتاق از سرور 
+      //room.name=fetched room description
+      room = urlPath[1];
+      linkIsValid = true;
+   } else {
+      room = urlPath;
+      linkIsValid = false;
+   }
+   const handlLogin = (data) => {
 
-            <Grid  md={10} xs={12}>
-               <MainPanel>
-               </MainPanel>
+      //get data from databse and if user can login ? or guest
+      if (data) {
 
-            </Grid>
-            <Grid  md={2} xs={12}>
+         setauthenticated(true);
+        
+      } else {
+         setauthenticated(false);
+         
+      }
 
-               <UsersList ></UsersList>
-               <ChatPanel></ChatPanel>
-            </Grid>
-            <Grid  md={12} xs={12}>
-               <RoomFooter>toolbar</RoomFooter>
-            </Grid>
-         </Grid>
+   }
 
-   
+   if (authenticated) {
+      return (
+         <Room
+         roomName={room}
+         >
+            This is the room
+         </Room>
+      )
+   } else {
+      return (
+         <Login room={room} linkIsValid={linkIsValid} onLogin={handlLogin}></Login>
+      )
+   }
 
-   )
 }
 
 export default App

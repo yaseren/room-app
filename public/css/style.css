@@ -20,7 +20,9 @@ body {
     line-height: 1.5;
     overflow-x: hidden
 }
-
+#root{
+    height:100%;
+}
 h1,
 h2,
 h3,
