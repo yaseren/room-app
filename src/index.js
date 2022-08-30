@@ -2,11 +2,17 @@
 import ReactDom from 'react-dom'
 
 import App from "./App"
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import {theme} from './theme'
 
-import './index.css'
 
 
 
-ReactDom.render(<App/>, document.getElementById('root'));
+ReactDom.render(
+    <ThemeProvider theme={theme}>
+        <App />
+    </ThemeProvider>
+    , document.getElementById('root'));
+
 
 

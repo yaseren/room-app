@@ -1,35 +1,39 @@
-import Room from "./components/Room/Room"
 import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
+
 import Grid from '@mui/material/Grid';
-const Item = styled(Paper)(({ theme }) => ({
-   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-   ...theme.typography.body2,
-   padding: theme.spacing(1),
-   textAlign: 'center',
-   color: theme.palette.text.secondary,
-}));
+
+import RoomHeader from "./components/Header/RoomHeader";
+import UsersList from "./components/UsersList/UsersList";
+import ChatPanel from "./components/ChatPanel/ChatPanel";
+import MainPanel from "./components/MainPanel/MainPanel";
+import RoomFooter from "./components/Footer/RoomFooter";
+
+
 const App = () => {
    return (
-      <Grid container spacing={1} padding={2}>
-         <Grid md={12} xs={12}>
-            <Box>
-               <Paper variant="outlined" square />
-            </Box>
+ 
+         <Grid container spacing={1} padding={2} >
+            <Grid setHight  md={12} xs={12}>
+
+               <RoomHeader></RoomHeader>
+            </Grid>
+
+            <Grid  md={10} xs={12}>
+               <MainPanel>
+               </MainPanel>
+
+            </Grid>
+            <Grid  md={2} xs={12}>
+
+               <UsersList ></UsersList>
+               <ChatPanel></ChatPanel>
+            </Grid>
+            <Grid  md={12} xs={12}>
+               <RoomFooter>toolbar</RoomFooter>
+            </Grid>
          </Grid>
-         <Grid item md={10} xs={12} height={Screen.a}>
-           
-                      
-            
-         </Grid>
-         <Grid item md={2} xs={12}>
-            <Item>user and chat </Item>
-         </Grid>
-         <Grid item md={12} xs={12}>
-            <Item>toolbar</Item>
-         </Grid>
-      </Grid>
+
+   
 
    )
 }
