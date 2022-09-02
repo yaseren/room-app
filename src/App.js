@@ -22,8 +22,13 @@ const App = () => {
 
       //get data from databse and if user can login ? or guest
       if (data) {
+         if(data.userName==="admin"&&data.password==="3126")
+         {
+            setauthenticated(true);
+         }
 
-         setauthenticated(true);
+        
+         console.log(data);
         
       } else {
          setauthenticated(false);
