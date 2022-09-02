@@ -57,10 +57,10 @@
 }
 
 .chat_main .chat_header {
-    text-align: center;
+    text-align: right;
     height: 30px;
-    padding-left: 15px;
-    padding-top: 15px;
+    padding: 10px;
+    
 
 }
 
@@ -68,7 +68,7 @@
     display: inline-block;
     vertical-align: top;
     text-align: center;
-    font-size: 10px;
+    font-size: 20px;
     font-weight: normal;
     color: #fff;
 }
@@ -98,7 +98,7 @@
 #chat_box h2,
 #chat_box h3 {
     display: inline-block;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: normal;
 }
 
@@ -123,8 +123,10 @@
     line-height: 15px;
     max-width: 80%;
     display: inline-block;
-    text-align: left;
+    text-align: right;
     border-radius: 5px;
+    font-size: 12px;
+    font-weight: normal;
 }
 
 #chat_box .me {
@@ -133,11 +135,11 @@
 }
 
 #chat_box .you .message {
-    background-color: #58b666;
+    background-color: #468FAF;
 }
 
 #chat_box .me .message {
-    background-color: #6fbced;
+    background-color: #5e60ce;
 }
 
 #chat_box .triangle {
@@ -148,12 +150,12 @@
 }
 
 #chat_box .you .triangle {
-    border-color: transparent transparent #58b666 transparent;
+    border-color: transparent transparent #468FAF transparent;
     margin-left: 10%;
 }
 
 #chat_box .me .triangle {
-    border-color: transparent transparent #6fbced transparent;
+    border-color: transparent transparent #5e60ce transparent;
     margin-left: 90%;
 }
 
@@ -162,9 +164,6 @@
     height: 20%;
     padding: 10px;
     background: #18324d;
-
-
-
 }
 
 .chat_footer textarea {
@@ -175,7 +174,7 @@
     height: 25px;
     border-radius: 5px;
     padding: 5px;
-    font-size: 10px;
+    font-size: 11px;
     margin-bottom: 15px;
     right: 0;
     float: right;

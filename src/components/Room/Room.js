@@ -38,7 +38,7 @@ const Room = ({ roomName, nickname }) => {
                         }}
                         height
                     >
-                        پنل ویدئو و اشتراک صفحه
+                        پنل ویدئو و اشتراک دسکتاپ
                     </Box>
                 </Grid>
                 <Grid xs={12} md={3} sx={{
