@@ -11,9 +11,29 @@ import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import LogoutIcon from '@mui/icons-material/Logout';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
+import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
 export default function UploadButtons() {
-    
+    const [recording,setRecording]=React.useState(false);
+    const [mic,setMic]=React.useState(false);
+    const [camera,setCamera]=React.useState(false);
+    const [audio,setAudio]=React.useState(false);
+    const [screen,setScreen]=React.useState(false);
+   
+    const handlRecord=()=>{
+        if(recording){
+            setRecording(false)
+        }else{
+            setRecording(true)
+        }
+    }
+
+    const handlMic=()=>{
+        mic?setMic(false): setMic(true);
+    }
+    const handleCamera=()=>{ camera ? setCamera(false):setCamera(true) }
+    const handleAudio=()=>{audio ? setAudio(false): setAudio(true)}
+    const handleScreen=()=>{screen ? setScreen(false): setScreen(true)}
     return (
         <Stack direction="row" alignItems="center" spacing={2} style={{
             justifyContent: 'center',
@@ -22,18 +42,27 @@ export default function UploadButtons() {
             <Button variant="contained" component="label">
             <LogoutIcon />
             </Button>
-            <Button variant="contained" component="label">
-            <MicIcon />
+            <Button variant="contained" component="label" onClick={handlMic}>
+                {mic ? <MicIcon  sx={{color:'#8ac926'}} /> : <MicOffIcon/>}
+            
             </Button>
-            <Button variant="contained" component="label">
-            <VolumeUpIcon />
+            <Button variant="contained" component="label" onClick={handleCamera}>
+            {camera ? <VideocamIcon  sx={{color:'#8ac926'}} /> : <VideocamOffIcon/>}
+          
             </Button>
-            <Button variant="contained" component="label">
-            <VideocamIcon />
+            <Button variant="contained" component="label" onClick={handleAudio}>
+                {audio ? <VolumeUpIcon sx={{color:'#8ac926'}} />: <VolumeOffIcon/> }
+            
             </Button>
-            <Button variant="contained" component="label">
-            <ScreenShareIcon />
+           
+            <Button variant="contained" component="label" onClick={handleScreen}>
+                {screen ?   <ScreenShareIcon sx={{color:'#8ac926'}} /> :  <ScreenShareIcon /> }
+           
             </Button>
+            <Button variant="contained" component="label" onClick={handlRecord} >
+            <RecordIcon  sx={{color:'#ff0000'}}/> { recording ? "recording" : "record" }
+            </Button>
+
 
 
         </Stack>

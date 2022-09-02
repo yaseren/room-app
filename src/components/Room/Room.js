@@ -38,7 +38,7 @@ const Room = ({ roomName, nickname }) => {
                         }}
                         height
                     >
-                        This is main pan
+                        پنل ویدئو و اشتراک صفحه
                     </Box>
                 </Grid>
                 <Grid xs={12} md={3} sx={{
@@ -54,7 +54,7 @@ const Room = ({ roomName, nickname }) => {
                             alignItems: 'center',
                             borderRadius: 2,
                             boxShadow: 3,
-                            padding: 3,
+                            padding: 1,
                             m: 1,
                             backgroundColor: theme.palette.primary.dark,
                             color: theme.palette.text.light
@@ -62,11 +62,10 @@ const Room = ({ roomName, nickname }) => {
                         }}
                         height
                     >
-                        This is user adn chat pan
-
+                        {/*  users list and chat and other panels come here  */}
                         <UserList />
                         <ChatBox />
-
+                        {/*  users list and chat and other panels come here  */}
 
                     </Box>
                 </Grid>
@@ -80,13 +79,13 @@ const Room = ({ roomName, nickname }) => {
                             p: 1,
                             m: 1,
                             justifyItems: 'center',
-                            justifyContent:'center',
+                            justifyContent: 'center',
                             backgroundColor: theme.palette.primary.dark,
                             color: theme.palette.text.light,
 
 
                         }}
-                       
+
 
                     >
 

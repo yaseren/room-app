@@ -58,7 +58,7 @@ export default function SignIn({ room, linkIsValid, onLogin }) {
         return (
 
             <ThemeProvider theme={theme}>
-                <Container component="main" maxWidth="xs">
+                <Container component="main" maxWidth="xs" sx={{overflow:'hidden'}}>
                     <CssBaseline />
                     <Box
                         sx={{
@@ -75,10 +75,14 @@ export default function SignIn({ room, linkIsValid, onLogin }) {
 
                         }}
                     >
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <CloudIcon />
+                        <Avatar sizes='large' sx={{ m: 1, bgcolor:theme.palette.primary.main }}>
+                            <CloudIcon fontSize='large' />
+                        
                         </Avatar>
-                        <Typography component="h1" variant="h5">
+                        <Typography component="h1" variant="h4">
+                           CLOUDMEET
+                        </Typography>
+                        <Typography component="h2" variant="h5">
                             {roomName}
                         </Typography>
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, color: theme.palette.text.light }}>
@@ -92,6 +96,7 @@ export default function SignIn({ room, linkIsValid, onLogin }) {
                                 value={nickname}
                                 autoFocus
                                 onChange={(e) => { setNickname(e.target.value) }}
+                                sx={{fontFamily:'inherit'}}
                            
                             />
                             <TextField
@@ -102,6 +107,7 @@ export default function SignIn({ room, linkIsValid, onLogin }) {
                                 label="نام کاربری"
                                 name="userName"
                                 autoComplete="email"
+                                sx={{fontFamily:'inherit'}}
 
                             />
                             <TextField
