@@ -1,4 +1,6 @@
-import * as React from 'react';
+import { useEffect,useState } from 'react';
+
+import { JanusComponent, JanusPublisher, JanusVideoRoom } from '../janus';
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -11,7 +13,16 @@ import { theme } from '../../theme'
 import UserList from './componnets/Userlist';
 import ChatBox from './componnets/Chat';
 import AppBar from './componnets/Appbar';
+
 const Room = ({ roomName, nickname }) => {
+    const [room, setRoom] = useState(1234);
+    const [pubId, setPubId] = useState(null);
+    const [pubPvtId, setPubPvtId] = useState(null);
+    const [chatroom, setChatroom] = useState(null);
+
+    useEffect(() => {
+        console.log("room: " + room);
+    })
 
     return (
 
@@ -39,6 +50,22 @@ const Room = ({ roomName, nickname }) => {
                         height
                     >
                         پنل ویدئو و اشتراک دسکتاپ
+                        <JanusComponent server="wss://media.setup-infra.ir" >
+                            <JanusVideoRoom>
+                                <JanusPublisher
+                                    opaqueId="test12234"
+                                    secret="1234"
+                                    username="React_user"
+                                    setRoom={setRoom}
+                                    room={room}
+                                    setPubId={setPubId}
+                                    setPubPvtId={setPubPvtId}
+                                >
+
+                                </JanusPublisher>
+                            </JanusVideoRoom>
+
+                        </JanusComponent>
                     </Box>
                 </Grid>
                 <Grid xs={12} md={3} sx={{
