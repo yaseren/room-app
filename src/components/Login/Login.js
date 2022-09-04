@@ -75,8 +75,8 @@ export default function SignIn({ room, linkIsValid, onLogin }) {
 
                         }}
                     >
-                        <Avatar sizes='large' sx={{ m: 1, bgcolor:theme.palette.primary.main }}>
-                            <CloudIcon fontSize='large' />
+                        <Avatar  sx={{ m: 1, bgcolor:theme.palette.primary.main,color:"#fff" }}>
+                            <CloudIcon fontSize='medium' />
                         
                         </Avatar>
                         <Typography component="h1" variant="h4">

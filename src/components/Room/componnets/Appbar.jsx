@@ -13,54 +13,75 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
-export default function UploadButtons() {
-    const [recording,setRecording]=React.useState(false);
-    const [mic,setMic]=React.useState(false);
-    const [camera,setCamera]=React.useState(false);
-    const [audio,setAudio]=React.useState(false);
-    const [screen,setScreen]=React.useState(false);
-   
-    const handlRecord=()=>{
-        if(recording){
+export default function Appbar({ publishCamera ,setMute,setUnMute}) {
+    const [recording, setRecording] = React.useState(false);
+    const [mic, setMic] = React.useState(false);
+    const [camera, setCamera] = React.useState(false);
+    const [audio, setAudio] = React.useState(false);
+    const [screen, setScreen] = React.useState(false);
+
+    const handlRecord = () => {
+        if (recording) {
             setRecording(false)
-        }else{
+        } else {
             setRecording(true)
         }
     }
 
-    const handlMic=()=>{
-        mic?setMic(false): setMic(true);
+    const handlMic = () => {
+        if (mic) {
+            setMic(false);
+            setMute();
+        }else{
+            setMic(true)
+            setUnMute()
+        }
+       
     }
-    const handleCamera=()=>{ camera ? setCamera(false):setCamera(true) }
-    const handleAudio=()=>{audio ? setAudio(false): setAudio(true)}
-    const handleScreen=()=>{screen ? setScreen(false): setScreen(true)}
+
+    //! publish camera
+    const handleCamera = () => { 
+        if (camera) {
+            setCamera(false)
+            setMic(false);
+
+            publishCamera(false);
+        } else { 
+            setCamera(true);
+            setMic(true);
+            publishCamera(true);
+         }
+
+    }
+    const handleAudio = () => { audio ? setAudio(false) : setAudio(true) }
+    const handleScreen = () => { screen ? setScreen(false) : setScreen(true) }
     return (
         <Stack direction="row" alignItems="center" spacing={2} style={{
             justifyContent: 'center',
-            height:80
+            height: 80
         }}>
             <Button variant="contained" component="label">
-            <LogoutIcon />
+                <LogoutIcon />
             </Button>
             <Button variant="contained" component="label" onClick={handlMic}>
-                {mic ? <MicIcon  sx={{color:'#8ac926'}} /> : <MicOffIcon/>}
-            
+                {mic ? <MicIcon sx={{ color: '#8ac926' }} /> : <MicOffIcon />}
+
             </Button>
             <Button variant="contained" component="label" onClick={handleCamera}>
-            {camera ? <VideocamIcon  sx={{color:'#8ac926'}} /> : <VideocamOffIcon/>}
-          
+                {camera ? <VideocamIcon sx={{ color: '#8ac926' }} /> : <VideocamOffIcon />}
+
             </Button>
             <Button variant="contained" component="label" onClick={handleAudio}>
-                {audio ? <VolumeUpIcon sx={{color:'#8ac926'}} />: <VolumeOffIcon/> }
-            
+                {audio ? <VolumeUpIcon sx={{ color: '#8ac926' }} /> : <VolumeOffIcon />}
+
             </Button>
-           
+
             <Button variant="contained" component="label" onClick={handleScreen}>
-                {screen ?   <ScreenShareIcon sx={{color:'#8ac926'}} /> :  <ScreenShareIcon /> }
-           
+                {screen ? <ScreenShareIcon sx={{ color: '#8ac926' }} /> : <ScreenShareIcon />}
+
             </Button>
             <Button variant="contained" component="label" onClick={handlRecord} >
-            <RecordIcon  sx={{color:'#ff0000'}}/> { recording ? "recording" : "record" }
+                <RecordIcon sx={{ color: '#ff0000' }} /> {recording ? "recording" : "record"}
             </Button>
 
 

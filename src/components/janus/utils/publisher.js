@@ -152,24 +152,24 @@ export function publishToRoom(janus, opaqueId, room, secret,
     return sfutest;
 }
 
-export function publishOwnFeed(sfutest, useAudio) {
+export function publishOwnFeed(sfutest,useVideo, useAudio) {
     // Publish our stream
     sfutest.createOffer(
         {
             // Add data:true here if you want to publish datachannels as well
-            media: { audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true },
+            media: { audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: useVideo },
             simulcast: false,
             success: function (jsep) {
                 Janus.debug("Got publisher SDP!");
                 Janus.debug(jsep);
 
-                var publish = { "request": "configure", "audio": useAudio, "video": true };
+                var publish = { "request": "publish", "audio": useAudio, "video": useVideo };
                 sfutest.send({ "message": publish, "jsep": jsep });
             },
             error: function (error) {
                 Janus.error("WebRTC error:", error);
                 if (useAudio) {
-                    publishOwnFeed(sfutest, false);
+                    publishOwnFeed(sfutest, false,useAudio);
                 } else {
                     Janus.log("Error publishing feed: " + error);
                 }

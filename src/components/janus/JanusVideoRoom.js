@@ -1,14 +1,16 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect ,forwardRef, createRef} from 'react';
 import Janus from './utils/janus';
 
-const JanusVideoRoom = ({ children, janus, roomId }) => {
+const JanusVideoRoom =forwardRef(({ children, janus, roomId },ref) => {
     useEffect(() => {
         if(janus){
             
         }
     }, [janus])
+    const _ref=createRef();
+     
     return (
-        <div className="janus-video-room">
+        <div className="janus-video-room" ref={_ref}>
             {children &&
                 children.length && 
                     children.map((child, i) => (
@@ -21,6 +23,6 @@ const JanusVideoRoom = ({ children, janus, roomId }) => {
             }
         </div>
     );
-}
+})
 
 export default JanusVideoRoom
