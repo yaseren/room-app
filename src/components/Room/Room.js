@@ -1,4 +1,4 @@
-import { useEffect, useState, createRef ,useRef } from 'react';
+import { useEffect, useState, createRef, useRef } from 'react';
 
 import detectrtc from "detectrtc";
 
@@ -18,7 +18,7 @@ import UserList from './componnets/Userlist';
 import ChatBox from './componnets/Chat';
 import AppBar from './componnets/Appbar';
 
-import TestGrid from './grids/testGrid'
+import ResponsiveAutoExample from './grids/testGrid'
 
 const Room = ({ roomName, nickname }) => {
 
@@ -27,16 +27,16 @@ const Room = ({ roomName, nickname }) => {
 
     const [height, setHeight] = useState(0);
     const [width, setWidth] = useState(0);
-  
+
     useEffect(() => {
-      setHeight(vide_panel_ref.current.offsetHeight);
-      setWidth(vide_panel_ref.current.offsetWidth);
-  
-      // 👇️ if you need access to parent
-      // of the element on which you set the ref
-      console.log(vide_panel_ref.current.parentElement);
-      console.log(vide_panel_ref.current.parentElement.offsetHeight);
-      console.log(vide_panel_ref.current.parentElement.offsetWidth);
+        setHeight(vide_panel_ref.current.offsetHeight);
+        setWidth(vide_panel_ref.current.offsetWidth);
+
+        // 👇️ if you need access to parent
+        // of the element on which you set the ref
+        console.log(vide_panel_ref.current.parentElement);
+        console.log(vide_panel_ref.current.parentElement.offsetHeight);
+        console.log(vide_panel_ref.current.parentElement.offsetWidth);
     }, []);
 
     //#endregion
@@ -83,7 +83,7 @@ const Room = ({ roomName, nickname }) => {
         } else {
             sethasSpeakers(detectrtc.hasSpeakers);
         }
-    })
+    }, [])
     //#endregion
 
     const publishOwnfeed = (p) => {
@@ -124,13 +124,14 @@ const Room = ({ roomName, nickname }) => {
         <ThemeProvider theme={theme}>
             <Grid container sx={{ flexGrow: 1 }} height style={{ overflow: "hidden" }} >
                 <Grid xs={12} md={9} sx={{
-                    height: '80%',
+                    height: '85%',
                     p: 1
 
                 }}>
                     <Box
                         maxWidth="xlg"
                         sx={{
+                            overflow: "hidden",
                             marginTop: 2,
                             display: 'flex',
                             flexDirection: 'column',
@@ -146,7 +147,6 @@ const Room = ({ roomName, nickname }) => {
                         height
                         ref={vide_panel_ref}
                     >
-                        پنل ویدئو و اشتراک دسکتاپ
                         <JanusComponent server="wss://media.setup-infra.ir" >
                             <JanusVideoRoom>
                                 <JanusPublisher
@@ -167,38 +167,8 @@ const Room = ({ roomName, nickname }) => {
 
                         </JanusComponent>
 
-                        <TestGrid height={height} width={width}/>
+                        <ResponsiveAutoExample height={height} />
                     </Box>
-                </Grid>
-                <Grid xs={12} md={3} sx={{
-                    height: '80%',
-                    p: 1
-                }}>
-                    <Box
-                        maxWidth="xlg"
-                        sx={{
-                            marginTop: 2,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            borderRadius: 2,
-                            boxShadow: 3,
-                            padding: 1,
-                            m: 1,
-                            backgroundColor: theme.palette.primary.dark,
-                            color: theme.palette.text.light
-
-                        }}
-                        height
-                    >
-                        {/*  users list and chat and other panels come here  */}
-                        <UserList />
-                        <ChatBox />
-                        {/*  users list and chat and other panels come here  */}
-
-                    </Box>
-                </Grid>
-                <Grid xs={12} md={12}  >
                     <Box
 
                         sx={{
@@ -229,6 +199,37 @@ const Room = ({ roomName, nickname }) => {
                         />
 
                     </Box>
+                </Grid>
+                <Grid xs={12} md={3} sx={{
+                    height: '99%',
+                    p: 1
+                }}>
+                    <Box
+                        maxWidth="xlg"
+                        sx={{
+                            marginTop: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            borderRadius: 2,
+                            boxShadow: 3,
+                            padding: 1,
+                            m: 1,
+                            backgroundColor: theme.palette.primary.dark,
+                            color: theme.palette.text.light
+
+                        }}
+                        height
+                    >
+                        {/*  users list and chat and other panels come here  */}
+                        <UserList />
+                        <ChatBox />
+                        {/*  users list and chat and other panels come here  */}
+
+                    </Box>
+                </Grid>
+                <Grid xs={12} md={12}  >
+
                 </Grid>
 
             </Grid>

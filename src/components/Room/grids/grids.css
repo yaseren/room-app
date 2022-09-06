@@ -1,0 +1,10 @@
+video {
+    max-height: 200px;
+    width: 100%;
+    border-radius:20px;
+    background-color: black;
+}
+.card-body{
+    align-items: center;
+    align-content: center;
+}

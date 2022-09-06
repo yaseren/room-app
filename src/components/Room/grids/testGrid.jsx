@@ -1,48 +1,59 @@
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Card from 'react-bootstrap/Card';
+import './grids.css'
 
-
-import { Paper } from "@mui/material";
-import { border } from "@mui/system";
-import GridLayout  from "react-grid-layout";
-
-import "/node_modules/react-grid-layout/css/styles.css"
-import "/node_modules/react-resizable/css/styles.css"
-
-class TestGrid extends React.Component {
-    render() {
-        const mystyle = {
-            color: "black",
-            backgroundColor: "white",
-            padding: "10px",
-            fontFamily: "Arial",
-            borderRadius:10,
-          };
-          const style = {
-           display:"flex",
-          };
-      // layout is an array of objects, see the demo for more complete usage
-      const layout = [
-        { i: "a", x: 0, y: 0, w: 1, h: 2, static: true },
-        { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
-        { i: "c", x: 4, y: 0, w: 1, h: 2 }
-      ];
-      return (
-        <GridLayout
-        style={style}
-        className="layout"
-        layout={layout}
-        cols={12}
-        maxRows={2}
-        rowHeight={height/6}
-        width={width}
-        >
-            <div key="1" style={mystyle}>1</div>
-            <div key="2" style={mystyle}>2</div>
-            <div key="3" style={mystyle}>3</div>
-            <div key="4" style={mystyle}>4</div>
-            
-        </GridLayout>
-      );
+function ResponsiveAutoExample({ height }) {
+  const style = {
+   
+    color: "#fff",
+    padding: 5,
+ 
+  }
+  
+  const array=[1,2,3,4,5,6,7,8,9,10,11,12];
+  const getGrid=(a)=>{
+    if (a<=2){
+      return 6
+    }else if(a>2 && a<=4) {
+      return 6
+    } else if(a>4 && a<=9) {
+      return 4
+    }else if(a>8 && a<=12) {
+      return 3
+    }else if(a>12 && a<=24) {
+      return 2
+    }else if(a>24 && a<=48) {
+      return 1
     }
   }
 
-exports default TestGrid;
+  return (
+   
+   
+    <Container>
+      <Row>
+        {
+           array.map(i=>{
+            return(
+              <Col style={style}  md={getGrid(array.length)}>
+              <Card>
+                <Card.Body style={{Justify:"center"}} >
+                  <video loop autoPlay src='/videos/test.mp4' muted controls></video>
+                </Card.Body>
+              </Card>
+            </Col>
+            )
+          
+          })
+        }
+       
+       
+
+      </Row>
+    </Container>
+  );
+}
+
+export default ResponsiveAutoExample;
