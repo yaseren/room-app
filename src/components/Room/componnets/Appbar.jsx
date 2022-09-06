@@ -13,7 +13,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
-export default function Appbar({ publishCamera ,setMute,setUnMute}) {
+export default function Appbar({ publishCamera, setMute, setUnMute, hasMic, hasWebcam, hasSpeakers }) {
     const [recording, setRecording] = React.useState(false);
     const [mic, setMic] = React.useState(false);
     const [camera, setCamera] = React.useState(false);
@@ -32,25 +32,24 @@ export default function Appbar({ publishCamera ,setMute,setUnMute}) {
         if (mic) {
             setMic(false);
             setMute();
-        }else{
+        } else {
             setMic(true)
             setUnMute()
         }
-       
+
     }
 
     //! publish camera
-    const handleCamera = () => { 
+    const handleCamera = () => {
         if (camera) {
             setCamera(false)
             setMic(false);
-
             publishCamera(false);
-        } else { 
+        } else {
             setCamera(true);
             setMic(true);
             publishCamera(true);
-         }
+        }
 
     }
     const handleAudio = () => { audio ? setAudio(false) : setAudio(true) }
@@ -63,18 +62,31 @@ export default function Appbar({ publishCamera ,setMute,setUnMute}) {
             <Button variant="contained" component="label">
                 <LogoutIcon />
             </Button>
-            <Button variant="contained" component="label" onClick={handlMic}>
-                {mic ? <MicIcon sx={{ color: '#8ac926' }} /> : <MicOffIcon />}
+            {hasMic && (
+                <Button variant="contained" component="label" onClick={handlMic}>
+                    {mic ? <MicIcon sx={{ color: '#8ac926' }} /> : <MicOffIcon />}
 
-            </Button>
-            <Button variant="contained" component="label" onClick={handleCamera}>
-                {camera ? <VideocamIcon sx={{ color: '#8ac926' }} /> : <VideocamOffIcon />}
+                </Button>
 
-            </Button>
-            <Button variant="contained" component="label" onClick={handleAudio}>
-                {audio ? <VolumeUpIcon sx={{ color: '#8ac926' }} /> : <VolumeOffIcon />}
+            )}
 
-            </Button>
+            {hasWebcam && (
+
+                <Button variant="contained" component="label" onClick={handleCamera}>
+                    {camera ? <VideocamIcon sx={{ color: '#8ac926' }} /> : <VideocamOffIcon />}
+
+                </Button>
+            )}
+
+            {hasSpeakers && (
+
+                <Button variant="contained" component="label" onClick={handleAudio}>
+                    {audio ? <VolumeUpIcon sx={{ color: '#8ac926' }} /> : <VolumeOffIcon />}
+
+                </Button>
+            )}
+
+
 
             <Button variant="contained" component="label" onClick={handleScreen}>
                 {screen ? <ScreenShareIcon sx={{ color: '#8ac926' }} /> : <ScreenShareIcon />}

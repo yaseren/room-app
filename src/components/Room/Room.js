@@ -1,4 +1,6 @@
-import { useEffect, useState, createRef } from 'react';
+import { useEffect, useState, createRef ,useRef } from 'react';
+
+import detectrtc from "detectrtc";
 
 import { JanusComponent, JanusPublisher, JanusVideoRoom } from '../janus';
 
@@ -16,29 +18,87 @@ import UserList from './componnets/Userlist';
 import ChatBox from './componnets/Chat';
 import AppBar from './componnets/Appbar';
 
+import TestGrid from './grids/testGrid'
+
 const Room = ({ roomName, nickname }) => {
+
+    //#region //! get and set video panel h w
+    const vide_panel_ref = useRef(null);
+
+    const [height, setHeight] = useState(0);
+    const [width, setWidth] = useState(0);
+  
+    useEffect(() => {
+      setHeight(vide_panel_ref.current.offsetHeight);
+      setWidth(vide_panel_ref.current.offsetWidth);
+  
+      // 👇️ if you need access to parent
+      // of the element on which you set the ref
+      console.log(vide_panel_ref.current.parentElement);
+      console.log(vide_panel_ref.current.parentElement.offsetHeight);
+      console.log(vide_panel_ref.current.parentElement.offsetWidth);
+    }, []);
+
+    //#endregion
+
+    const [hasMic, setHasMic] = useState(true)
+    const [hasWebcam, setHasWebcam] = useState(false)
+    const [hasSpeakers, sethasSpeakers] = useState(false)
+
     const [room, setRoom] = useState(1004);
     const [pubId, setPubId] = useState(null);
     const [pubPvtId, setPubPvtId] = useState(null);
     const [chatroom, setChatroom] = useState(null);
 
+
     const [isMuted, setIsMuted] = useState(false);
-    const [isPublishing, setPublishing] = useState(false);
+    const [isPublishingVideo, setVideoPublishing] = useState(false);
     const [sfutest, setSfuTest] = useState(null);
 
+
+
+
+    //#region  //! detect microphon - webcam - aspekers and webrtc suport
+    useEffect(() => {
+        console.log(detectrtc.browser)
+        detectrtc.load();
+        if (detectrtc.isWebRTCSupported === false) {
+            console.log('Please use Chrome or Firefox.');
+        }
+
+        if (detectrtc.hasWebcam === false) {
+            console.log('Please install an external webcam device.');
+        } else {
+            setHasWebcam(detectrtc.hasWebcam)
+        }
+
+        if (detectrtc.hasMicrophone === false) {
+            console.log('Please install an external microphone device.');
+        } else {
+            setHasMic(detectrtc.hasMicrophone);
+        }
+
+        if (detectrtc.hasSpeakers === false && (detectrtc.browser.name === 'Chrome' || detectrtc.browser.name === 'Edge')) {
+            console.log('Oops, your system can not play audios.');
+        } else {
+            sethasSpeakers(detectrtc.hasSpeakers);
+        }
+    })
+    //#endregion
 
     const publishOwnfeed = (p) => {
         if (p) {
 
             publishOwnFeed(sfutest, true, true);
-            setPublishing(true);
+            setVideoPublishing(true);
 
         } else {
             unpublishOwnFeed(sfutest);
-            setPublishing(false);
+            setVideoPublishing(false);
 
         }
     }
+
 
     const setMute = () => {
         if (!sfutest.isAudioMuted()) {
@@ -66,6 +126,7 @@ const Room = ({ roomName, nickname }) => {
                 <Grid xs={12} md={9} sx={{
                     height: '80%',
                     p: 1
+
                 }}>
                     <Box
                         maxWidth="xlg"
@@ -83,6 +144,7 @@ const Room = ({ roomName, nickname }) => {
 
                         }}
                         height
+                        ref={vide_panel_ref}
                     >
                         پنل ویدئو و اشتراک دسکتاپ
                         <JanusComponent server="wss://media.setup-infra.ir" >
@@ -97,13 +159,15 @@ const Room = ({ roomName, nickname }) => {
                                     setPubPvtId={setPubPvtId}
                                     stutest={sfutest}
                                     setSfuTest={setSfuTest}
-                                    isPublishing={isPublishing}
+                                    isPublishingVideo={isPublishingVideo}
                                 >
 
                                 </JanusPublisher>
                             </JanusVideoRoom>
 
                         </JanusComponent>
+
+                        <TestGrid height={height} width={width}/>
                     </Box>
                 </Grid>
                 <Grid xs={12} md={3} sx={{
@@ -153,8 +217,16 @@ const Room = ({ roomName, nickname }) => {
 
 
                     >
+                        {/* //! appbar */}
+                        <AppBar
+                            hasMic={hasMic}
+                            hasWebcam={hasWebcam}
+                            hasSpeakers={hasSpeakers}
+                            publishCamera={publishOwnfeed}
+                            setMute={setMute}
+                            setUnMute={setUnMute}
 
-                        <AppBar publishCamera={publishOwnfeed} setMute={setMute} setUnMute={setUnMute} />
+                        />
 
                     </Box>
                 </Grid>

@@ -5,7 +5,7 @@ import { publishToRoom } from './utils/publisher';
 import JanusPlayer from './JanusPlayer';
 import JanusChat from './JanusChat';
 
-const JanusPublisher =forwardRef(({ janus, opaqueId, room, secret, pin, username, setRoom, setPubId, setPubPvtId, children,isPublishing ,setSfuTest,sfutest},ref) => {
+const JanusPublisher =forwardRef(({ janus, opaqueId, room, secret, pin, username, setRoom, setPubId, setPubPvtId, children,isPublishingVideo ,setSfuTest,sfutest},ref) => {
     const [playerState, setPlayerState] = useState("Ready");
     const [isMuted, setIsMuted] = useState(false);
 
@@ -84,7 +84,7 @@ const JanusPublisher =forwardRef(({ janus, opaqueId, room, secret, pin, username
 
  
      
-        if (isPublishing) {
+        if (isPublishingVideo) {
             return (
                 <div className="janus-publisher">
                 <div className="janus-video">

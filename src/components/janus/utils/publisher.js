@@ -1,3 +1,4 @@
+import { RestaurantMenu } from '@mui/icons-material';
 import Janus from './janus';
 // publisher helper
 
@@ -169,10 +170,13 @@ export function publishOwnFeed(sfutest,useVideo, useAudio) {
             error: function (error) {
                 Janus.error("WebRTC error:", error);
                 if (useAudio) {
-                    publishOwnFeed(sfutest, false,useAudio);
+                    publishOwnFeed(sfutest, false ,useAudio);
+                    return;
                 } else {
                     Janus.log("Error publishing feed: " + error);
+                    return
                 }
+               
             }
         });
 }
