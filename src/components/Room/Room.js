@@ -55,6 +55,8 @@ const Room = ({ roomName, nickname }) => {
     const [isPublishingVideo, setVideoPublishing] = useState(false);
     const [sfutest, setSfuTest] = useState(null);
 
+    const [streams,setStreams]=useState([])
+
 
 
 
@@ -166,8 +168,9 @@ const Room = ({ roomName, nickname }) => {
                             </JanusVideoRoom>
 
                         </JanusComponent>
-
+                        {streams.length>0 &&(
                         <ResponsiveAutoExample height={height} />
+                        )}
                     </Box>
                     <Box
 
