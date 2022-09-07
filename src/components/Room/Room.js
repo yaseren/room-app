@@ -1,6 +1,6 @@
 import { useEffect, useState, createRef, useRef } from 'react';
 
-import detectrtc from "detectrtc";
+import detectrtc from "detectrtc/DetectRTC";
 
 import { JanusComponent, JanusPublisher, JanusVideoRoom } from '../janus';
 
@@ -41,7 +41,7 @@ const Room = ({ roomName, nickname }) => {
 
     //#endregion
 
-    const [hasMic, setHasMic] = useState(true)
+    const [hasMic, setHasMic] = useState(false)
     const [hasWebcam, setHasWebcam] = useState(false)
     const [hasSpeakers, sethasSpeakers] = useState(false)
 
@@ -163,7 +163,6 @@ const Room = ({ roomName, nickname }) => {
                                     setSfuTest={setSfuTest}
                                     isPublishingVideo={isPublishingVideo}
                                 >
-
                                 </JanusPublisher>
                             </JanusVideoRoom>
 
