@@ -1,16 +1,16 @@
 import Janus from './janus';
 
-export function subscribeRemoteFeed(janus, opaqueId, room, id, pvtId, display, audio, video, callback) {
-    let remoteFeed = null;
+export function subscriberemoteFeedHandle(janus, opaqueId, room, id, pvtId, display, audio, video, callback) {
+    let remoteFeedHandle = null;
 
     janus.attach(
 		{
 			plugin: "janus.plugin.videoroom",
 			opaqueId: opaqueId,
 			success: function(pluginHandle) {
-				remoteFeed = pluginHandle;
-				remoteFeed.simulcastStarted = false;
-				Janus.log("Plugin attached! (" + remoteFeed.getPlugin() + ", id=" + remoteFeed.getId() + ")");
+				remoteFeedHandle = pluginHandle;
+				remoteFeedHandle.simulcastStarted = false;
+				Janus.log("Plugin attached! (" + remoteFeedHandle.getPlugin() + ", id=" + remoteFeedHandle.getId() + ")");
                 Janus.log("  -- This is a subscriber");
                 
 				var subscribe = { 
@@ -28,12 +28,12 @@ export function subscribeRemoteFeed(janus, opaqueId, room, id, pvtId, display, a
 						video = video.toUpperCase()
 					subscribe["offer_video"] = false;
 				}
-				remoteFeed.videoCodec = video;
-				remoteFeed.send({"message": subscribe});
+				remoteFeedHandle.videoCodec = video;
+				remoteFeedHandle.send({"message": subscribe});
 			},
 			error: function(error) {
                 Janus.error("  -- Error attaching plugin...", error);
-                callback(remoteFeed, "error", error);
+                callback(remoteFeedHandle, "error", error);
 			},
 			onmessage: function(msg, jsep) {
 				Janus.debug(" ::: Got a message (subscriber) :::");
@@ -43,7 +43,7 @@ export function subscribeRemoteFeed(janus, opaqueId, room, id, pvtId, display, a
 					Janus.debug("SUBS: Handling SDP as well...");
                     Janus.debug(jsep);
 					// Answer and attach
-					remoteFeed.createAnswer(
+					remoteFeedHandle.createAnswer(
 						{
 							jsep: jsep,
 							// Add data:true here if you want to subscribe to datachannels as well
@@ -53,7 +53,7 @@ export function subscribeRemoteFeed(janus, opaqueId, room, id, pvtId, display, a
 								Janus.debug("Got SDP!");
 								Janus.debug(jsep);
 								var body = { "request": "start", "room": room };
-								remoteFeed.send({"message": body, "jsep": jsep});
+								remoteFeedHandle.send({"message": body, "jsep": jsep});
 							},
 							error: function(error) {
 								Janus.error("WebRTC error:", error);
@@ -63,17 +63,17 @@ export function subscribeRemoteFeed(janus, opaqueId, room, id, pvtId, display, a
 				
 			},
 			webrtcState: function(on) {
-				Janus.log("Janus says this WebRTC PeerConnection (feed #" + remoteFeed.rfindex + ") is " + (on ? "up" : "down") + " now");
+				Janus.log("Janus says this WebRTC PeerConnection (feed #" + remoteFeedHandle.rfindex + ") is " + (on ? "up" : "down") + " now");
 			},
 			onlocalstream: function(stream) {
 				// The subscriber stream is recvonly, we don't expect anything here
 			},
 			onremotestream: function(stream) {
-                callback(remoteFeed, "onremotestream", stream);
+                callback(remoteFeedHandle, "onremotestream", stream);
 			},
 			oncleanup: function() {
-                callback(remoteFeed, "oncleanup");
+                callback(remoteFeedHandle, "oncleanup");
 			}
         });
-    return remoteFeed;
+    return remoteFeedHandle;
 }

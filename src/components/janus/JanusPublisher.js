@@ -14,8 +14,7 @@ const JanusPublisher =forwardRef(({ janus, opaqueId, room, secret, pin, username
 
 
     useEffect(() => {
-        publishToRoom(janus, opaqueId, room, secret, pin, username, true,
-            (_sfutest, eventType, data) => {
+        publishToRoom(janus, opaqueId, room, secret, pin, username, true,(_sfutest, eventType, data) => {
                 setSfuTest(_sfutest);
                 if (eventType === "created") {
                     setRoom(data.room);

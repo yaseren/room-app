@@ -3,7 +3,7 @@ import Janus from './janus';
 
 export function publishToRoom(janus, opaqueId, room, secret,
     pin, username, isPublisher, callback) {
-    let sfutest = null;
+    let publishHandle = null;
     let mystream = null;
 
     if (!janus) {
@@ -15,7 +15,7 @@ export function publishToRoom(janus, opaqueId, room, secret,
             plugin: "janus.plugin.videoroom",
             opaqueId: opaqueId,
             success: function (pluginHandle) {
-                sfutest = pluginHandle;
+                publishHandle = pluginHandle;
                 Janus.log("  -- This is a publisher/manager ss");
                 //!start yass codes
                 if (isPublisher) {
@@ -25,15 +25,14 @@ export function publishToRoom(janus, opaqueId, room, secret,
                         "ptype": "publisher",
                         "display": username || "guest_publisher"
                     };
-                    sfutest.send({ message: register });
+                    publishHandle.send({ message: register });
                 }
 
                 //! end yass code
 
 
-
-
-                //! orgin codes
+            //#region //! orgin codes
+                
                 // if room is available
                 // if(isPublisher){    
                 //     const create = {
@@ -44,7 +43,7 @@ export function publishToRoom(janus, opaqueId, room, secret,
                 //         pin
                 //     };
                 //     // send message to create new room
-                //     sfutest.send({
+                //     publishHandle.send({
                 //         message: create,
                 //         success: (data) => {
                 //             // check if room create is okay
@@ -57,9 +56,9 @@ export function publishToRoom(janus, opaqueId, room, secret,
                 //                     "ptype": "publisher",
                 //                     "display": username
                 //                 };
-                //                 sfutest.send({ message: register });
+                //                 publishHandle.send({ message: register });
 
-                //                 callback(sfutest, "created", data);
+                //                 callback(publishHandle, "created", data);
                 //             }
                 //         },
                 //         error: (error) => {
@@ -73,12 +72,14 @@ export function publishToRoom(janus, opaqueId, room, secret,
                 //         "ptype": "publisher",
                 //         "display": username || "guest_publisher"
                 //     };
-                //     sfutest.send({ message: register });
+                //     publishHandle.send({ message: register });
                 // }
+
+    //#endregion
             },
             error: function (error) {
                 Janus.log("  -- Error attaching plugin...", error);
-                callback(sfutest, "error", error);
+                callback(publishHandle, "error", error);
             },
             consentDialog: function (on) {
                 Janus.debug("Consent dialog should be " + (on ? "on" : "off") + " now");
@@ -100,19 +101,19 @@ export function publishToRoom(janus, opaqueId, room, secret,
                 const event = msg.videoroom;
                 if (event != undefined && event != null) {
                     if (event === "joined") {
-                        callback(sfutest, "joined", msg)
+                        callback(publishHandle, "joined", msg)
                     } else if (event === "destroyed") {
                         Janus.warn("The room has been destroyed!");
-                        callback(sfutest, "destroyed", event);
+                        callback(publishHandle, "destroyed", event);
                     } else if (event === "event") {
                         if (msg.error !== undefined && msg.error !== null) {
-                            callback(sfutest, "error", msg);
+                            callback(publishHandle, "error", msg);
                         } else if (msg.publishers !== undefined && msg.publishers !== null) {
-                            callback(sfutest, "publishers", msg);
+                            callback(publishHandle, "publishers", msg);
                         } else if (msg["leaving"] !== undefined && msg["leaving"] !== null) {
-                            callback(sfutest, "leaving", msg);
+                            callback(publishHandle, "leaving", msg);
                         } else if (msg["unpublished"] !== undefined && msg["unpublished"] !== null) {
-                            callback(sfutest, "unpublished", msg)
+                            callback(publishHandle, "unpublished", msg)
                         }
                     }
                 }
@@ -120,7 +121,7 @@ export function publishToRoom(janus, opaqueId, room, secret,
                 if (jsep !== undefined && jsep !== null) {
                     Janus.debug("Handling SDP as well...");
                     Janus.debug(jsep);
-                    sfutest.handleRemoteJsep({ jsep: jsep });
+                    publishHandle.handleRemoteJsep({ jsep: jsep });
                     // Check if any of the media we wanted to publish has
                     // been rejected (e.g., wrong or unsupported codec)
                     var audio = msg["audio_codec"];
@@ -137,24 +138,24 @@ export function publishToRoom(janus, opaqueId, room, secret,
             onlocalstream: function (stream) {
                 Janus.debug(" ::: Got a local stream :::");
                 mystream = stream;
-                callback(sfutest, "onlocalstream", stream);
+                callback(publishHandle, "onlocalstream", stream);
             },
             onremotestream: function (stream) {
                 // The publisher stream is sendonly, we don't expect anything here
             },
             oncleanup: function () {
                 Janus.log(" ::: Got a cleanup notification: we are unpublished now :::");
-                callback(sfutest, "oncleanup");
+                callback(publishHandle, "oncleanup");
             }
         }
     );
 
-    return sfutest;
+    return publishHandle;
 }
 
-export function publishOwnFeed(sfutest,useVideo, useAudio) {
+export function publishOwnFeed(publishHandle,useVideo, useAudio) {
     // Publish our stream
-    sfutest.createOffer(
+    publishHandle.createOffer(
         {
             // Add data:true here if you want to publish datachannels as well
             media: { audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: useVideo },
@@ -164,12 +165,12 @@ export function publishOwnFeed(sfutest,useVideo, useAudio) {
                 Janus.debug(jsep);
 
                 var publish = { "request": "publish", "audio": useAudio, "video": useVideo };
-                sfutest.send({ "message": publish, "jsep": jsep });
+                publishHandle.send({ "message": publish, "jsep": jsep });
             },
             error: function (error) {
                 Janus.error("WebRTC error:", error);
                 if (useAudio) {
-                    publishOwnFeed(sfutest, false ,useAudio);
+                    publishOwnFeed(publishHandle, false ,useAudio);
                     return;
                 } else {
                     Janus.log("Error publishing feed: " + error);
@@ -180,9 +181,32 @@ export function publishOwnFeed(sfutest,useVideo, useAudio) {
         });
 }
 
-export function unpublishOwnFeed(sfutest) {
+export function publishOwnAuidoFeed(publishHandle, useAudio) {
+    // Publish our stream
+    publishHandle.createOffer(
+        {
+            // Add data:true here if you want to publish datachannels as well
+            media: { audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: false },
+            simulcast: false,
+            success: function (jsep) {
+                Janus.debug("Got publisher SDP!");
+                Janus.debug(jsep);
+
+                var publish = { "request": "publish", "audio": useAudio, "video": false };
+                publishHandle.send({ "message": publish, "jsep": jsep });
+            },
+            error: function (error) {
+                Janus.error("WebRTC error:", error);
+                
+                    Janus.log("Error publishing feed: " + error);
+                    return             
+            }
+        });
+}
+
+export function unpublishOwnFeed(publishHandle) {
     // Unpublish our stream
     var unpublish = { "request": "unpublish" };
-    sfutest.send({ "message": unpublish });
-    sfutest.hangup();
+    publishHandle.send({ "message": unpublish });
+    publishHandle.hangup();
 }
