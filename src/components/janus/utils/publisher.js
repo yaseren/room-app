@@ -1,4 +1,3 @@
-import { RestaurantMenu } from '@mui/icons-material';
 import Janus from './janus';
 // publisher helper
 

@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import './grids.css'
 
-function ResponsiveAutoExample({ height }) {
+function VideoGrid({ height ,sources }) {
   const style = {
    
     color: "#fff",
@@ -12,7 +12,7 @@ function ResponsiveAutoExample({ height }) {
  
   }
   
-  const array=[1,2,3,4];
+  const array=sources;
   const getGrid=(a)=>{
     if (a<=2){
       return 6
@@ -56,4 +56,4 @@ function ResponsiveAutoExample({ height }) {
   );
 }
 
-export default ResponsiveAutoExample;
+export default VideoGrid;

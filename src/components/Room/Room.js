@@ -18,7 +18,7 @@ import UserList from './componnets/Userlist';
 import ChatBox from './componnets/Chat';
 import AppBar from './componnets/Appbar';
 
-import ResponsiveAutoExample from './grids/testGrid'
+import VideoGrid from './grids/VideoGrid';
 
 const Room = ({ roomName, nickname }) => {
 
@@ -55,7 +55,7 @@ const Room = ({ roomName, nickname }) => {
     const [isPublishingVideo, setVideoPublishing] = useState(false);
     const [sfutest, setSfuTest] = useState(null);
 
-    const [streams,setStreams]=useState([])
+    const [feedStreams,setFeedStreams]=useState([])
 
 
 
@@ -167,8 +167,8 @@ const Room = ({ roomName, nickname }) => {
                             </JanusVideoRoom>
 
                         </JanusComponent>
-                        {streams.length>0 &&(
-                        <ResponsiveAutoExample height={height} />
+                        {feedStreams.length>0 &&(
+                        <VideoGrid height={height} feedStreams={feedStreams} />
                         )}
                     </Box>
                     <Box
