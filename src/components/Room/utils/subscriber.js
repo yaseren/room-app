@@ -1,16 +1,16 @@
 import Janus from './janus';
 
-export function subscriberemoteFeedHandle(janus, opaqueId, room, id, pvtId, display, audio, video, callback) {
-    let remoteFeedHandle = null;
+export function AttchSubscriberHandler(janus, opaqueId, room, id, pvtId, display, audio, video, callback) {
+    let subscriberHandle = null;
 
     janus.attach(
 		{
 			plugin: "janus.plugin.videoroom",
 			opaqueId: opaqueId,
 			success: function(pluginHandle) {
-				remoteFeedHandle = pluginHandle;
-				remoteFeedHandle.simulcastStarted = false;
-				Janus.log("Plugin attached! (" + remoteFeedHandle.getPlugin() + ", id=" + remoteFeedHandle.getId() + ")");
+				subscriberHandle = pluginHandle;
+				subscriberHandle.simulcastStarted = false;
+				Janus.log("Plugin attached! (" + subscriberHandle.getPlugin() + ", id=" + subscriberHandle.getId() + ")");
                 Janus.log("  -- This is a subscriber");
                 
 				var subscribe = { 
@@ -28,12 +28,12 @@ export function subscriberemoteFeedHandle(janus, opaqueId, room, id, pvtId, disp
 						video = video.toUpperCase()
 					subscribe["offer_video"] = false;
 				}
-				remoteFeedHandle.videoCodec = video;
-				remoteFeedHandle.send({"message": subscribe});
+				subscriberHandle.videoCodec = video;
+				subscriberHandle.send({"message": subscribe});
 			},
 			error: function(error) {
                 Janus.error("  -- Error attaching plugin...", error);
-                callback(remoteFeedHandle, "error", error);
+                callback(subscriberHandle, "error", error);
 			},
 			onmessage: function(msg, jsep) {
 				Janus.debug(" ::: Got a message (subscriber) :::");
@@ -43,7 +43,7 @@ export function subscriberemoteFeedHandle(janus, opaqueId, room, id, pvtId, disp
 					Janus.debug("SUBS: Handling SDP as well...");
                     Janus.debug(jsep);
 					// Answer and attach
-					remoteFeedHandle.createAnswer(
+					subscriberHandle.createAnswer(
 						{
 							jsep: jsep,
 							// Add data:true here if you want to subscribe to datachannels as well
@@ -53,7 +53,7 @@ export function subscriberemoteFeedHandle(janus, opaqueId, room, id, pvtId, disp
 								Janus.debug("Got SDP!");
 								Janus.debug(jsep);
 								var body = { "request": "start", "room": room };
-								remoteFeedHandle.send({"message": body, "jsep": jsep});
+								subscriberHandle.send({"message": body, "jsep": jsep});
 							},
 							error: function(error) {
 								Janus.error("WebRTC error:", error);
@@ -63,17 +63,17 @@ export function subscriberemoteFeedHandle(janus, opaqueId, room, id, pvtId, disp
 				
 			},
 			webrtcState: function(on) {
-				Janus.log("Janus says this WebRTC PeerConnection (feed #" + remoteFeedHandle.rfindex + ") is " + (on ? "up" : "down") + " now");
+				Janus.log("Janus says this WebRTC PeerConnection (feed #" + subscriberHandle.rfindex + ") is " + (on ? "up" : "down") + " now");
 			},
 			onlocalstream: function(stream) {
 				// The subscriber stream is recvonly, we don't expect anything here
 			},
 			onremotestream: function(stream) {
-                callback(remoteFeedHandle, "onremotestream", stream);
+                callback(subscriberHandle, "onremotestream", stream);
 			},
 			oncleanup: function() {
-                callback(remoteFeedHandle, "oncleanup");
+                callback(subscriberHandle, "oncleanup");
 			}
         });
-    return remoteFeedHandle;
+    return subscriberHandle;
 }

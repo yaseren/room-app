@@ -37,7 +37,7 @@ export default function UserList() {
                     </div>
                 </div>
                 <ul id="chat_box">
-                    <li class="you">
+                    <li id='1' class="you">
                         <div class="entete">
                             <span class="status green"></span>
                             <h2>مجید</h2>
@@ -48,7 +48,7 @@ export default function UserList() {
                             به نظرت کلود میت خوبه ؟
                         </div>
                     </li>
-                    <li class="me">
+                    <li id='2' class="me">
                         <div class="entete">
                             <h3>10:12AM, Today</h3>
                             <h2>محسن</h2>
@@ -59,7 +59,7 @@ export default function UserList() {
                             آره جالب به نظر میرسه
                         </div>
                     </li>
-                    <li class="you">
+                    <li id='3' class="you">
                         <div class="entete">
                             <h2>علی</h2>
                             <h3>10:12AM, Today</h3>
@@ -70,7 +70,7 @@ export default function UserList() {
                             به نظر منم خووبه
                         </div>
                     </li>
-                    <li class="you">
+                    <li id='4' class="you">
                         <div class="entete">
                             <span class="status green"></span>
                             <h2>محمد</h2>
@@ -81,7 +81,7 @@ export default function UserList() {
                             البته خیلی کار داره ،اما با پتانسیلی که از تیم میبینم ، موفق خواهند بود
                         </div>
                     </li>
-                    <li class="me">
+                    <li id='5' class="me">
                         <div class="entete">
                             <h3>10:12AM, Today</h3>
                             <h2>محسن</h2>
@@ -92,7 +92,7 @@ export default function UserList() {
                             منم موافقم ، پر انرژی باشندهمیشه
                         </div>
                     </li>
-                    <li class="you">
+                    <li id='6' class="you">
                         <div class="entete">
                             <h2>مجید</h2>
                             <h3>10:12AM, Today</h3>

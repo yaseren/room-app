@@ -1,15 +1,13 @@
 import { useEffect, useState, createRef, useRef } from 'react';
 
-import detectrtc from "detectrtc/DetectRTC";
+import detectrtc from  "detectrtc/DetectRTC";
+import Janus from './utils/janus';
 
-import { JanusComponent, JanusPublisher, JanusVideoRoom } from '../janus';
 
-import { publishToRoom, publishOwnFeed, unpublishOwnFeed, sendData, publishChatroom } from '../janus/utils/publisher';
+import { AttchPublisherHandler, publishOwnFeed, unpublishOwnFeed, sendData, publishChatroom } from './utils/publisher';
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 
 
 import { ThemeProvider } from '@mui/material/styles';
@@ -34,9 +32,9 @@ const Room = ({ roomName, nickname }) => {
 
         // 👇️ if you need access to parent
         // of the element on which you set the ref
-        console.log(vide_panel_ref.current.parentElement);
-        console.log(vide_panel_ref.current.parentElement.offsetHeight);
-        console.log(vide_panel_ref.current.parentElement.offsetWidth);
+      //  console.log(vide_panel_ref.current.parentElement);
+      //  console.log(vide_panel_ref.current.parentElement.offsetHeight);
+     //   console.log(vide_panel_ref.current.parentElement.offsetWidth);
     }, []);
 
     //#endregion
@@ -45,81 +43,180 @@ const Room = ({ roomName, nickname }) => {
     const [hasWebcam, setHasWebcam] = useState(false)
     const [hasSpeakers, sethasSpeakers] = useState(false)
 
+    const [mystream, setMystream] = useState(null)
+
+    const [server, setServer] = useState("wss://media.setup-infra.ir")
+    const [janusInstance, setJanusInstance] = useState(null);
     const [room, setRoom] = useState(1004);
-    const [pubId, setPubId] = useState(null);
-    const [pubPvtId, setPubPvtId] = useState(null);
+    const [id, setId] = useState(null);
+    const [pvtId, setPvtId] = useState(null);
     const [chatroom, setChatroom] = useState(null);
+    const [userName, setUserName] = useState(nickname);
+    const [apqueId, setApqueId] = useState(Janus.randomString(12));
+
 
 
     const [isMuted, setIsMuted] = useState(false);
     const [isPublishingVideo, setVideoPublishing] = useState(false);
-    const [sfutest, setSfuTest] = useState(null);
+    const [publisherHandler, setPublisherHandler] = useState(null);
+    const [subscriberHandle, setSubscriberHandle] = useState(null);
 
-    const [feedStreams,setFeedStreams]=useState([])
+    const[ispublisher,setIspublisher]=useState(false);
+
+    const [feedStreams, setFeedStreams] = useState([])
+  
+    
+    const JanusInit = () => {
+        Janus.init({
+            debug: "all",
+            callback: function () {
+                if (!Janus.isWebrtcSupported()) {
+                    console.log("No WebRTC support... ");
+                    return;
+                }
+
+                const janus = new Janus(
+                    {
+                        server: server,
+                        // No "iceServers" is provided, meaning janus.js will use a default STUN server
+                        // Here are some examples of how an iceServers field may look like to support TURN
+                        // 		iceServers: [{urls: "turn:yourturnserver.com:3478", username: "janususer", credential: "januspwd"}],
+                        // 		iceServers: [{urls: "turn:yourturnserver.com:443?transport=tcp", username: "janususer", credential: "januspwd"}],
+                        // 		iceServers: [{urls: "turns:yourturnserver.com:443?transport=tcp", username: "janususer", credential: "januspwd"}],
+                        // Should the Janus API require authentication, you can specify either the API secret or user token here too
+                        //		token: "mytoken",
+                        //	or
+                        //		apisecret: "serversecret",
+                        success: function () {
+                            // Attach to echo test plugin
+                            console.log("Janus loaded");
+                            
+                            setJanusInstance(janus);
+                          
+                        },
+                        error: function (error) {
+                            Janus.error(error);
+                            setJanusInstance(null);
+                        },
+                        destroyed: function () {
+                            setJanusInstance(null);
+                        }
+                    });
+            }
+        });
+    }
+ 
 
 
 
-
-    //#region  //! detect microphon - webcam - aspekers and webrtc suport
-    useEffect(() => {
-        console.log(detectrtc.browser)
-        detectrtc.load();
-        if (detectrtc.isWebRTCSupported === false) {
-            console.log('Please use Chrome or Firefox.');
+    //#region  //! detect microphon - webcam - speakers and webrtc suport and init janus
+    
+    useEffect(()=>{
+        detectrtc.load(()=>{
+            console.log(detectrtc.version);
+            if (detectrtc.isWebRTCSupported === false) {
+                console.log('Please use Chrome or Firefox.');
+            }
+    
+            if (detectrtc.hasWebcam === false) {
+                console.log('Please install an external webcam device.');
+            } else {
+                setHasWebcam(detectrtc.hasWebcam)
+            }
+    
+            if (detectrtc.hasMicrophone === false) {
+                console.log('Please install an external microphone device.');
+            } else {
+                setHasMic(detectrtc.hasMicrophone);
+            }
+    
+            if (detectrtc.hasSpeakers === false && (detectrtc.browser.name === 'Chrome' || detectrtc.browser.name === 'Edge')) {
+                console.log('Oops, your system can not play audios.');
+            } else {
+                sethasSpeakers(detectrtc.hasSpeakers);
+            }
+        
         }
-
-        if (detectrtc.hasWebcam === false) {
-            console.log('Please install an external webcam device.');
-        } else {
-            setHasWebcam(detectrtc.hasWebcam)
-        }
-
-        if (detectrtc.hasMicrophone === false) {
-            console.log('Please install an external microphone device.');
-        } else {
-            setHasMic(detectrtc.hasMicrophone);
-        }
-
-        if (detectrtc.hasSpeakers === false && (detectrtc.browser.name === 'Chrome' || detectrtc.browser.name === 'Edge')) {
-            console.log('Oops, your system can not play audios.');
-        } else {
-            sethasSpeakers(detectrtc.hasSpeakers);
-        }
-    }, [])
+        );
+    },[])
+ 
     //#endregion
+useEffect(()=>{
+    JanusInit();
+},[]);
+useEffect(()=>{
+    if (janusInstance) {
+        AttchPublisherHandler(janusInstance, apqueId, room, null, null, userName, true, (handler, eventType, data) => {
+            setPublisherHandler(handler);
+           
+            if (eventType === "joined") {
+                const { id, private_id } = data;
+                setId(id);
+                setPvtId(private_id);
+            } else if (eventType === "onlocalstream") {
+                setMystream(data);
+                //   const videoContainer = videoArea.current;
+                //  const videoPlayer = videoContainer.querySelector(".janus-video-player")
+    
+                //  Janus.attachMediaStream(videoPlayer, mystream);
+                console.log(mystream);
+                if (handler.webrtcStuff.pc.iceConnectionState !== "completed" &&
+                    handler.webrtcStuff.pc.iceConnectionState !== "connected") {
+                    //  setPlayerState("Live");
+                }
+                var videoTracks = mystream.getVideoTracks();
+                if (videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
+                    //    setPlayerState("Error");
+                }
+            } else if (eventType === "oncleanup") {
+                //  setPlayerState("Paused");
+                setIsMuted(false);
+            } else if (eventType === "error") {
+                //  setPlayerState("Error");
+                setIsMuted(false);
+            }
+    
+        });
+    }
+    
+},[janusInstance]);
+
 
     const publishOwnfeed = (p) => {
-        if (p) {
+        if (publisherHandler) {
+            if (p) {
 
-            publishOwnFeed(sfutest, true, true);
-            setVideoPublishing(true);
+                publishOwnFeed(publisherHandler, true, true);
+                setVideoPublishing(true);
 
-        } else {
-            unpublishOwnFeed(sfutest);
-            setVideoPublishing(false);
+            } else {
+                unpublishOwnFeed(publisherHandler);
+                setVideoPublishing(false);
 
+            }
         }
+
     }
 
 
     const setMute = () => {
-        if (!sfutest.isAudioMuted()) {
-            sfutest.muteAudio();
+        if (!publisherHandler.isAudioMuted()) {
+            publisherHandler.muteAudio();
         }
-        setIsMuted(sfutest.isAudioMuted());
+        setIsMuted(publisherHandler.isAudioMuted());
     }
 
     const setUnMute = () => {
-        if (sfutest.isAudioMuted()) {
-            sfutest.unmuteAudio();
+        if (publisherHandler.isAudioMuted()) {
+            publisherHandler.unmuteAudio();
         }
-        setIsMuted(sfutest.isAudioMuted());
+        setIsMuted(publisherHandler.isAudioMuted());
     }
 
     useEffect(() => {
         console.log("room: " + room);
 
-    })
+    },[])
 
     return (
 
@@ -149,26 +246,9 @@ const Room = ({ roomName, nickname }) => {
                         height
                         ref={vide_panel_ref}
                     >
-                        <JanusComponent server="wss://media.setup-infra.ir" >
-                            <JanusVideoRoom>
-                                <JanusPublisher
-                                    opaqueId="test12234"
-                                    secret="1004"
-                                    username="React_user"
-                                    setRoom={setRoom}
-                                    room={room}
-                                    setPubId={setPubId}
-                                    setPubPvtId={setPubPvtId}
-                                    stutest={sfutest}
-                                    setSfuTest={setSfuTest}
-                                    isPublishingVideo={isPublishingVideo}
-                                >
-                                </JanusPublisher>
-                            </JanusVideoRoom>
 
-                        </JanusComponent>
-                        {feedStreams.length>0 &&(
-                        <VideoGrid height={height} feedStreams={feedStreams} />
+                        {feedStreams.length > 0 && (
+                            <VideoGrid height={height} feedStreams={feedStreams} />
                         )}
                     </Box>
                     <Box

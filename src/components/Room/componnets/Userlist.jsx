@@ -19,10 +19,8 @@ import { Button, ButtonGroup, Grid, IconButton, Stack, Tooltip } from '@mui/mate
 
 
 function generate(element) {
-    return [0, 1, 2, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((value) =>
-        React.cloneElement(element, {
-            key: value,
-        }),
+    return [0, 1, 2, 3, 5].map((value) =>
+        React.cloneElement(element, { key: value, }),
     );
 }
 
@@ -51,7 +49,7 @@ export default function UserList() {
         >
             <List sx={{ width: '100%' }} dense={dense}>
                 {generate(
-                    <li className='user_row' >
+                    <li  className='user_row' >
 
                         <Grid container >
                             <Grid item xs={4}>

@@ -37,7 +37,7 @@ function VideoGrid({ height ,sources }) {
         {
            array.map(i=>{
             return(
-              <Col style={style}  md={getGrid(array.length)}>
+              <Col style={style} key={{i}}  md={getGrid(array.length)}>
               <Card>
                 <Card.Body style={{Justify:"center"}} >
                   <video loop autoPlay src='/videos/test.mp4' muted controls></video>

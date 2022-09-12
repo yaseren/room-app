@@ -1,7 +1,7 @@
 import Janus from './janus';
 // publisher helper
 
-export function publishToRoom(janus, opaqueId, room, secret,
+export function AttchPublisherHandler(janus, opaqueId, room, secret,
     pin, username, isPublisher, callback) {
     let publishHandle = null;
     let mystream = null;
