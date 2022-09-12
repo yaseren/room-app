@@ -99,7 +99,7 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                 Janus.log("Got message", msg);
 
                 const event = msg.videoroom;
-                if (event != undefined && event != null) {
+                if (event !== undefined && event !== null) {
                     if (event === "joined") {
                         callback(publishHandle, "joined", msg)
                     } else if (event === "destroyed") {
