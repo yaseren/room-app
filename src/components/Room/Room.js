@@ -1,10 +1,13 @@
 import { useEffect, useState, createRef, useRef } from 'react';
 
-import detectrtc from  "detectrtc/DetectRTC";
+import detectrtc from "detectrtc/DetectRTC";
 import Janus from './utils/janus';
 
 
-import { AttchPublisherHandler, publishOwnFeed, unpublishOwnFeed, sendData, publishChatroom } from './utils/publisher';
+import { publishOwnFeed, unpublishOwnFeed, sendData, publishChatroom } from './utils/publisher';
+import  JanusPlayer  from './videoRoom/JanusPlayer'
+import  JanusVideoRoom  from './videoRoom/JanusVideoRoom'
+import JanusPublisher   from './videoRoom/JanusPublisher'
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -32,9 +35,9 @@ const Room = ({ roomName, nickname }) => {
 
         // 👇️ if you need access to parent
         // of the element on which you set the ref
-      //  console.log(vide_panel_ref.current.parentElement);
-      //  console.log(vide_panel_ref.current.parentElement.offsetHeight);
-     //   console.log(vide_panel_ref.current.parentElement.offsetWidth);
+        //  console.log(vide_panel_ref.current.parentElement);
+        //  console.log(vide_panel_ref.current.parentElement.offsetHeight);
+        //   console.log(vide_panel_ref.current.parentElement.offsetWidth);
     }, []);
 
     //#endregion
@@ -61,11 +64,11 @@ const Room = ({ roomName, nickname }) => {
     const [publisherHandler, setPublisherHandler] = useState(null);
     const [subscriberHandle, setSubscriberHandle] = useState(null);
 
-    const[ispublisher,setIspublisher]=useState(false);
+    const [ispublisher, setIspublisher] = useState(false);
 
     const [feedStreams, setFeedStreams] = useState([])
-  
-    
+
+
     const JanusInit = () => {
         Janus.init({
             debug: "all",
@@ -90,9 +93,9 @@ const Room = ({ roomName, nickname }) => {
                         success: function () {
                             // Attach to echo test plugin
                             console.log("Janus loaded");
-                            
+
                             setJanusInstance(janus);
-                          
+
                         },
                         error: function (error) {
                             Janus.error(error);
@@ -105,98 +108,66 @@ const Room = ({ roomName, nickname }) => {
             }
         });
     }
- 
+
 
 
 
     //#region  //! detect microphon - webcam - speakers and webrtc suport and init janus
-    
-    useEffect(()=>{
-        detectrtc.load(()=>{
+
+    useEffect(() => {
+        detectrtc.load(() => {
             console.log(detectrtc.version);
             if (detectrtc.isWebRTCSupported === false) {
                 console.log('Please use Chrome or Firefox.');
             }
-    
+
             if (detectrtc.hasWebcam === false) {
                 console.log('Please install an external webcam device.');
             } else {
                 setHasWebcam(detectrtc.hasWebcam)
             }
-    
+
             if (detectrtc.hasMicrophone === false) {
                 console.log('Please install an external microphone device.');
             } else {
                 setHasMic(detectrtc.hasMicrophone);
             }
-    
+
             if (detectrtc.hasSpeakers === false && (detectrtc.browser.name === 'Chrome' || detectrtc.browser.name === 'Edge')) {
                 console.log('Oops, your system can not play audios.');
             } else {
                 sethasSpeakers(detectrtc.hasSpeakers);
             }
-        
+
         }
         );
-    },[])
- 
+    }, [])
+
     //#endregion
-useEffect(()=>{
-    JanusInit();
-},[]);
-useEffect(()=>{
-    if (janusInstance) {
-        AttchPublisherHandler(janusInstance, apqueId, room, null, null, userName, true, (handler, eventType, data) => {
-            setPublisherHandler(handler);
-           
-            if (eventType === "joined") {
-                const { id, private_id } = data;
-                setId(id);
-                setPvtId(private_id);
-            } else if (eventType === "onlocalstream") {
-                setMystream(data);
-                //   const videoContainer = videoArea.current;
-                //  const videoPlayer = videoContainer.querySelector(".janus-video-player")
-    
-                //  Janus.attachMediaStream(videoPlayer, mystream);
-                console.log(mystream);
-                if (handler.webrtcStuff.pc.iceConnectionState !== "completed" &&
-                    handler.webrtcStuff.pc.iceConnectionState !== "connected") {
-                    //  setPlayerState("Live");
-                }
-                var videoTracks = mystream.getVideoTracks();
-                if (videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
-                    //    setPlayerState("Error");
-                }
-            } else if (eventType === "oncleanup") {
-                //  setPlayerState("Paused");
-                setIsMuted(false);
-            } else if (eventType === "error") {
-                //  setPlayerState("Error");
-                setIsMuted(false);
-            }
-    
-        });
-    }
-    
-},[janusInstance]);
+    useEffect(() => {
+        JanusInit();
+    }, []);
 
 
-    const publishOwnfeed = (p) => {
-        if (publisherHandler) {
-            if (p) {
+    const publishOwnfeed = () => {
+       if(isPublishingVideo){
+        setVideoPublishing(false);
+        setTimeout(()=>{
+            unpublishOwnFeed(publisherHandler);
+        },500)
 
-                publishOwnFeed(publisherHandler, true, true);
-                setVideoPublishing(true);
+       }else{
+        setVideoPublishing(true);
+        setTimeout(()=>{
+            publishOwnFeed(publisherHandler,true,true)     
+        },500)
+       
 
-            } else {
-                unpublishOwnFeed(publisherHandler);
-                setVideoPublishing(false);
-
-            }
-        }
+       }
 
     }
+
+
 
 
     const setMute = () => {
@@ -216,7 +187,11 @@ useEffect(()=>{
     useEffect(() => {
         console.log("room: " + room);
 
-    },[])
+    }, [])
+    useEffect(() => {
+        console.log("feed Streams: " , feedStreams);
+
+    }, [feedStreams])
 
     return (
 
@@ -246,10 +221,33 @@ useEffect(()=>{
                         height
                         ref={vide_panel_ref}
                     >
+                        {/* //! publisher  */}
+                        <JanusVideoRoom janus={janusInstance}>
+                           
+                               
+                                <JanusPublisher
+                                    publisherHandler={publisherHandler}
+                                    setPublisherHandler={setPublisherHandler}
+                                    room={room}
+                                    setRoom={setRoom}
+                                    username={userName}
+                                    setId={setId}
+                                    setPvtId={setPvtId}
+                                    setMystream={setMystream}
+                                    startPublishsing={isPublishingVideo}
+                                    feedStreams={feedStreams}
+                                    setFeedStreams={setFeedStreams}
+                                   
+ 
+                                    ></JanusPublisher>
+                         
+                        </JanusVideoRoom>
 
-                        {feedStreams.length > 0 && (
+                        {/* //! video grids  */}
+
+                        {/* {feedStreams.length > 0 && (
                             <VideoGrid height={height} feedStreams={feedStreams} />
-                        )}
+                        )} */}
                     </Box>
                     <Box
 
@@ -257,12 +255,11 @@ useEffect(()=>{
 
                             borderRadius: 2,
                             boxShadow: 0,
-                            p: 1,
+                            p: 0,
                             m: 1,
                             justifyItems: 'center',
                             justifyContent: 'center',
-                            backgroundColor: theme.palette.primary.dark,
-                            color: theme.palette.text.light,
+                           
 
 
                         }}

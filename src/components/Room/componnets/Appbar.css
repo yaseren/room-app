@@ -1,0 +1,14 @@
+.appbar{
+
+    justify-content: center;
+    position: fixed;
+    bottom: 25px;
+    width: 100%;
+    max-width:73%;
+    border-radius: 10px;
+    justify-items: center;
+    left: auto;
+    right: auto;
+    /* transform: translate(-50%, 0); */
+    z-index: 1100;
+}

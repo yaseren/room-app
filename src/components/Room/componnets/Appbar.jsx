@@ -1,4 +1,9 @@
 import * as React from 'react';
+import './Appbar.css'
+
+
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '../../../theme'
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
@@ -54,50 +59,56 @@ export default function Appbar({ publishCamera, setMute, setUnMute, hasMic, hasW
     }
     const handleAudio = () => { audio ? setAudio(false) : setAudio(true) }
     const handleScreen = () => { screen ? setScreen(false) : setScreen(true) }
-    return (
-        <Stack direction="row" alignItems="center" spacing={2} style={{
-            justifyContent: 'center',
-            height: 80
-        }}>
-            <Button variant="contained" component="label">
-                <LogoutIcon />
-            </Button>
-            {hasMic && (
-                <Button variant="contained" component="label" onClick={handlMic}>
-                    {mic ? <MicIcon sx={{ color: '#8ac926' }} /> : <MicOffIcon />}
-
-                </Button>
-
-            )}
-
-            {hasWebcam && (
-
-                <Button variant="contained" component="label" onClick={handleCamera}>
-                    {camera ? <VideocamIcon sx={{ color: '#8ac926' }} /> : <VideocamOffIcon />}
-
-                </Button>
-            )}
-
-            {hasSpeakers && (
-
-                <Button variant="contained" component="label" onClick={handleAudio}>
-                    {audio ? <VolumeUpIcon sx={{ color: '#8ac926' }} /> : <VolumeOffIcon />}
-
-                </Button>
-            )}
-
-
-
-            <Button variant="contained" component="label" onClick={handleScreen}>
-                {screen ? <ScreenShareIcon sx={{ color: '#8ac926' }} /> : <ScreenShareIcon />}
+    
+ 
+return (
+    <ThemeProvider theme={theme}>
+    <Stack className='appbar' direction="row" alignItems="center" spacing={2} style={{
+        justifyContent: 'center',
+        height: 80,
+        backgroundColor: theme.palette.primary.dark,
+        color: theme.palette.text.light,
+    }}>
+        <Button variant="contained" component="label">
+            <LogoutIcon />
+        </Button>
+        {hasMic && (
+            <Button variant="contained" component="label" onClick={handlMic}>
+                {mic ? <MicIcon sx={{ color: '#8ac926' }} /> : <MicOffIcon />}
 
             </Button>
-            <Button variant="contained" component="label" onClick={handlRecord} >
-                <RecordIcon sx={{ color: '#ff0000' }} /> {recording ? "recording" : "record"}
+
+        )}
+
+        {hasWebcam && (
+
+            <Button variant="contained" component="label" onClick={handleCamera}>
+                {camera ? <VideocamIcon sx={{ color: '#8ac926' }} /> : <VideocamOffIcon />}
+
             </Button>
+        )}
+
+        {hasSpeakers && (
+
+            <Button variant="contained" component="label" onClick={handleAudio}>
+                {audio ? <VolumeUpIcon sx={{ color: '#8ac926' }} /> : <VolumeOffIcon />}
+
+            </Button>
+        )}
 
 
 
-        </Stack>
-    );
+        <Button variant="contained" component="label" onClick={handleScreen}>
+            {screen ? <ScreenShareIcon sx={{ color: '#8ac926' }} /> : <ScreenShareIcon />}
+
+        </Button>
+        <Button variant="contained" component="label" onClick={handlRecord} >
+            <RecordIcon sx={{ color: '#ff0000' }} /> {recording ? "recording" : "record"}
+        </Button>
+
+
+
+    </Stack>
+    </ThemeProvider>
+);
 }
