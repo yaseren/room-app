@@ -40,7 +40,7 @@ export default function UserList() {
                     <li id='1' class="you">
                         <div class="entete">
                             <span class="status green"></span>
-                            <h2>مجید</h2>
+                            <h2>محمد</h2>
                             <h3>10:12AM, Today</h3>
                         </div>
                         <div class="triangle"></div>
@@ -51,7 +51,7 @@ export default function UserList() {
                     <li id='2' class="me">
                         <div class="entete">
                             <h3>10:12AM, Today</h3>
-                            <h2>محسن</h2>
+                            <h2>امیر</h2>
                             <span class="status blue"></span>
                         </div>
                         <div class="triangle"></div>
@@ -84,7 +84,7 @@ export default function UserList() {
                     <li id='5' class="me">
                         <div class="entete">
                             <h3>10:12AM, Today</h3>
-                            <h2>محسن</h2>
+                            <h2>امیر</h2>
                             <span class="status blue"></span>
                         </div>
                         <div class="triangle"></div>
@@ -94,7 +94,7 @@ export default function UserList() {
                     </li>
                     <li id='6' class="you">
                         <div class="entete">
-                            <h2>مجید</h2>
+                            <h2>محمد</h2>
                             <h3>10:12AM, Today</h3>
                             <span class="status blue"></span>
                         </div>
