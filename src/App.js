@@ -5,7 +5,7 @@ import Room from "./components/Room/Room";
 
 
 const App = () => {
-   const [authenticated,setauthenticated]=useState(true); // برای مرحله توسعه مقدار true پاس داده شده
+   const [authenticated,setauthenticated]=useState(false); // برای مرحله توسعه مقدار true پاس داده شده
    const [nicname ,setNicname]=useState('');
    let room, linkIsValid;
    const urlPath = window.location.pathname.toLocaleLowerCase().split('/');
@@ -43,6 +43,7 @@ const App = () => {
       return (
          <Room
          roomName={room}
+         nickname={nicname}
 
          >
            
