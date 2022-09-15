@@ -50,7 +50,7 @@ const Room = ({ roomName, nickname }) => {
 
     const [server, setServer] = useState("wss://media.setup-infra.ir")
     const [janusInstance, setJanusInstance] = useState(null);
-    const [room, setRoom] = useState(1004);
+    const [room, setRoom] = useState(parseInt(roomName.replace ( /[^\d.]/g, '' )));
     const [id, setId] = useState(null);
     const [pvtId, setPvtId] = useState(null);
     const [chatroom, setChatroom] = useState(null);
@@ -185,7 +185,8 @@ const Room = ({ roomName, nickname }) => {
     }
 
     useEffect(() => {
-        console.log("room: " + room);
+        console.log("roomName: " + roomName);
+        console.log("roomId: " + room);
 
     }, [])
     useEffect(() => {

@@ -70,7 +70,7 @@ return (
         color: theme.palette.text.light,
     }}>
         <Button variant="contained" component="label">
-            <LogoutIcon />
+            <LogoutIcon onClick={()=>{window.location.reload()}} />
         </Button>
         {hasMic && (
             <Button variant="contained" component="label" onClick={handlMic}>
