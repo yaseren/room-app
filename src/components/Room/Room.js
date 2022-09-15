@@ -5,9 +5,9 @@ import Janus from './utils/janus';
 
 
 import { publishOwnFeed, unpublishOwnFeed, sendData, publishChatroom } from './utils/publisher';
-import  JanusPlayer  from './videoRoom/JanusPlayer'
-import  JanusVideoRoom  from './videoRoom/JanusVideoRoom'
-import JanusPublisher   from './videoRoom/JanusPublisher'
+import JanusPlayer from './videoRoom/JanusPlayer'
+import JanusVideoRoom from './videoRoom/JanusVideoRoom'
+import JanusPublisher from './videoRoom/JanusPublisher'
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -150,20 +150,20 @@ const Room = ({ roomName, nickname }) => {
 
 
     const publishOwnfeed = () => {
-       if(isPublishingVideo){
-        setVideoPublishing(false);
-        setTimeout(()=>{
-            unpublishOwnFeed(publisherHandler);
-        },500)
+        if (isPublishingVideo) {
+            setVideoPublishing(false);
+            setTimeout(() => {
+                unpublishOwnFeed(publisherHandler);
+            }, 500)
 
-       }else{
-        setVideoPublishing(true);
-        setTimeout(()=>{
-            publishOwnFeed(publisherHandler,true,true)     
-        },500)
-       
+        } else {
+            setVideoPublishing(true);
+            setTimeout(() => {
+                publishOwnFeed(publisherHandler, true, true)
+            }, 500)
 
-       }
+
+        }
 
     }
 
@@ -189,7 +189,7 @@ const Room = ({ roomName, nickname }) => {
 
     }, [])
     useEffect(() => {
-        console.log("feed Streams: " , feedStreams);
+        console.log("feed Streams: ", feedStreams);
 
     }, [feedStreams])
 
@@ -221,27 +221,7 @@ const Room = ({ roomName, nickname }) => {
                         height
                         ref={vide_panel_ref}
                     >
-                        {/* //! publisher  */}
-                        <JanusVideoRoom janus={janusInstance}>
-                           
-                               
-                                <JanusPublisher
-                                    publisherHandler={publisherHandler}
-                                    setPublisherHandler={setPublisherHandler}
-                                    room={room}
-                                    setRoom={setRoom}
-                                    username={userName}
-                                    setId={setId}
-                                    setPvtId={setPvtId}
-                                    setMystream={setMystream}
-                                    startPublishsing={isPublishingVideo}
-                                    feedStreams={feedStreams}
-                                    setFeedStreams={setFeedStreams}
-                                   
- 
-                                    ></JanusPublisher>
-                         
-                        </JanusVideoRoom>
+
 
                         {/* //! video grids  */}
 
@@ -259,7 +239,7 @@ const Room = ({ roomName, nickname }) => {
                             m: 1,
                             justifyItems: 'center',
                             justifyContent: 'center',
-                           
+
 
 
                         }}
@@ -300,15 +280,29 @@ const Room = ({ roomName, nickname }) => {
                         }}
                         height
                     >
+                        {/*  local webcam  */}
+                        {/* //! publisher  */}
+                        <JanusVideoRoom janus={janusInstance}>
+                            <JanusPublisher
+                                publisherHandler={publisherHandler}
+                                setPublisherHandler={setPublisherHandler}
+                                room={room}
+                                setRoom={setRoom}
+                                username={userName}
+                                setId={setId}
+                                setPvtId={setPvtId}
+                                setMystream={setMystream}
+                                startPublishsing={isPublishingVideo}
+                                feedStreams={feedStreams}
+                                setFeedStreams={setFeedStreams}
+                            ></JanusPublisher>
+                        </JanusVideoRoom>
                         {/*  users list and chat and other panels come here  */}
                         <UserList />
                         <ChatBox />
                         {/*  users list and chat and other panels come here  */}
 
                     </Box>
-                </Grid>
-                <Grid xs={12} md={12}  >
-
                 </Grid>
 
             </Grid>

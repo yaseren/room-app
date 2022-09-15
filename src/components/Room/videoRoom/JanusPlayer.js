@@ -18,7 +18,7 @@ const JanusPlayer = React.forwardRef((
     }, ref) => {
     return (
         <div className="janus-video-container" ref={ref}>
-            <div className="janus-video-status">
+            {/* <div className="janus-video-status">
                 {status === "Ready" && (
                     <span style={{ color: "grey" }}>{readyText ? readyText : 'Ready'}</span>
                 )}
@@ -31,7 +31,7 @@ const JanusPlayer = React.forwardRef((
                 {status === "Error" && (
                     <span style={{ color: "red" }}>{errorText ? readyText : 'Error'}</span>
                 )}
-            </div>
+            </div> */}
             
            <video
                 className="janus-video-player"

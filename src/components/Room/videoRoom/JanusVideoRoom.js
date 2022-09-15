@@ -8,7 +8,7 @@ const JanusVideoRoom = ({ children, janus, roomId }) => {
         }
     }, [janus])
     return (
-        <div className="janus-video-room">
+        <>
             {children &&
                 children.length && 
                     children.map((child, i) => (
@@ -19,7 +19,7 @@ const JanusVideoRoom = ({ children, janus, roomId }) => {
                 !children.length && 
                     React.cloneElement(children, { janus: janus })
             }
-        </div>
+        </>
     );
 }
 
