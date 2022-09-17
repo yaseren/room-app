@@ -19,7 +19,7 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                 Janus.log("  -- This is a publisher/manager ss");
                 //!start yass codes
                 if (isPublisher) {
-                    var register = {
+                    let register = {
                         "request": "join",
                         "room": room,
                         "ptype": "publisher",

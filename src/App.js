@@ -5,7 +5,7 @@ import Room from "./components/Room/Room";
 
 
 const App = () => {
-   const [authenticated,setauthenticated]=useState(false); // برای مرحله توسعه مقدار true پاس داده شده
+   const [authenticated,setauthenticated]=useState(true); // برای مرحله توسعه مقدار true پاس داده شده
    const [nicname ,setNicname]=useState('');
    let room, linkIsValid;
    const urlPath = window.location.pathname.toLocaleLowerCase().split('/');
@@ -23,7 +23,7 @@ const App = () => {
 
       //get data from databse and if user can login ? or guest
       if (data) {
-         if(data.userName==="admin"&&data.password==="3126")
+         if(data.userName==="admin"&&data.password==="1234")
          {
             setauthenticated(true);
             setNicname(data.nickname);

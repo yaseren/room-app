@@ -8,7 +8,7 @@ import "./video-room.css";
 
 const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
     setPvtId, setId, children, publisherHandler, setPublisherHandler, startPublishsing,
-    feedStreams, setFeedStreams }) => {
+    setPublishers }) => {
     const [playerState, setPlayerState] = useState("Ready");
     const [isMuted, setIsMuted] = useState(false);
     // const [publisherHandler, setpublisherHandler] = useState(null);
@@ -17,26 +17,31 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
     let mystream = null;
 
     useEffect(() => {
+        console.log("----------janus publisher component useEffect executed");
         AttchPublisherHandler(janus, opaqueId, room, secret, pin, username, true,
             (_publisherHandler, eventType, data) => {
-                // setpublisherHandler(_publisherHandler);
+               
                 setPublisherHandler(_publisherHandler)
                 if (eventType === "created") {
                     setRoom(data.room);
                 } else if (eventType === "joined") {
-                    const { id, private_id } = data;
+                    const { id, private_id ,publishers,attendees} = data;
 
                     setId(id);
                     setPvtId(private_id);
-
+                    if(publishers){
+                        setPublishers(publishers[0]);
+                    }
+                  
                     setPlayerState("Paused");
                 } else if (eventType === "onlocalstream") {
                     mystream = data;
                     const videoContainer = videoArea.current;
                     const videoPlayer = videoContainer.querySelector(".janus-video-player")
-                    feedStreams.push(mystream);
-                    setFeedStreams(feedStreams);
-                    console.log("Mys streams : ", mystream);
+                   
+                    if(mystream){
+                        setPublishers(mystream);
+                    }
                     Janus.attachMediaStream(videoPlayer, mystream);
 
                     if (_publisherHandler.webrtcStuff.pc.iceConnectionState !== "completed" &&
@@ -53,16 +58,21 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
                 } else if (eventType === "error") {
                     setPlayerState("Error");
                     setIsMuted(false);
+                }else if (eventType === "publishers") {
+                   
+                   let {publishers}=data;        
+                    if(publishers){
+                        setPublishers(publishers);
+                    }
+                  
+                    setPlayerState("Paused");
                 }
             }
         )
 
     }, [janus])
 
-    useEffect(() => {
-
-    }, [])
-
+ 
     const onStartClick = () => {
         publishOwnFeed(publisherHandler, true);
     }

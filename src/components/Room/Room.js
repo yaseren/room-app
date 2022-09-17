@@ -8,6 +8,7 @@ import { publishOwnFeed, unpublishOwnFeed, sendData, publishChatroom } from './u
 import JanusPlayer from './videoRoom/JanusPlayer'
 import JanusVideoRoom from './videoRoom/JanusVideoRoom'
 import JanusPublisher from './videoRoom/JanusPublisher'
+import JanusSubscriber from './videoRoom/JanusSubscriber'
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -50,17 +51,22 @@ const Room = ({ roomName, nickname }) => {
 
     const [server, setServer] = useState("wss://media.setup-infra.ir")
     const [janusInstance, setJanusInstance] = useState(null);
-    const [room, setRoom] = useState(parseInt(roomName.replace ( /[^\d.]/g, '' )));
+    const [room, setRoom] = useState(parseInt(roomName.replace(/[^\d.]/g, '')));
     const [id, setId] = useState(null);
     const [pvtId, setPvtId] = useState(null);
     const [chatroom, setChatroom] = useState(null);
     const [userName, setUserName] = useState(nickname);
     const [apqueId, setApqueId] = useState(Janus.randomString(12));
 
+    const [publishers, setPublishers] = useState([]);//total publishers
+    const [subscriptions, setSubscriptions] = useState([]); // publishers list that subscriber
+    const [toSubscribe, setToSubscribe] = useState([]); //publishers that is to be subscribed
+
 
 
     const [isMuted, setIsMuted] = useState(false);
     const [isPublishingVideo, setVideoPublishing] = useState(false);
+    
     const [publisherHandler, setPublisherHandler] = useState(null);
     const [subscriberHandle, setSubscriberHandle] = useState(null);
 
@@ -190,9 +196,11 @@ const Room = ({ roomName, nickname }) => {
 
     }, [])
     useEffect(() => {
-        console.log("feed Streams: ", feedStreams);
+        console.log("list of publishers to subscribe: ", publishers);
+        setToSubscribe(publishers);
 
-    }, [feedStreams])
+
+    }, [publishers])
 
     return (
 
@@ -225,6 +233,18 @@ const Room = ({ roomName, nickname }) => {
 
 
                         {/* //! video grids  */}
+                        {/*  local webcam  */}
+                        {/* //! subscriber  */}
+
+                       {/* {toSubscribe.length>0 && (<JanusVideoRoom janus={janusInstance}>
+                            <JanusSubscriber
+                                opaqueId={apqueId}
+                                room={room}
+                                pubId={id}
+                                pubPvtId={pvtId}
+                                subscribeList={toSubscribe}
+                            />
+                        </JanusVideoRoom>)} */}
 
                         {/* {feedStreams.length > 0 && (
                             <VideoGrid height={height} feedStreams={feedStreams} />
@@ -289,13 +309,13 @@ const Room = ({ roomName, nickname }) => {
                                 setPublisherHandler={setPublisherHandler}
                                 room={room}
                                 setRoom={setRoom}
+                                apqueId={apqueId}
                                 username={userName}
                                 setId={setId}
                                 setPvtId={setPvtId}
                                 setMystream={setMystream}
                                 startPublishsing={isPublishingVideo}
-                                feedStreams={feedStreams}
-                                setFeedStreams={setFeedStreams}
+                                setPublishers={setPublishers}
                             ></JanusPublisher>
                         </JanusVideoRoom>
                         {/*  users list and chat and other panels come here  */}

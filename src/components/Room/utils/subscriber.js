@@ -1,6 +1,6 @@
 import Janus from './janus';
 
-export function AttchSubscriberHandler(janus, opaqueId, room, id, pvtId, display, audio, video, callback) {
+export function subscribeRemoteFeed(janus, opaqueId, room,publisher, callback) {
     let subscriberHandle = null;
 
     janus.attach(
@@ -17,18 +17,23 @@ export function AttchSubscriberHandler(janus, opaqueId, room, id, pvtId, display
                     "request": "join", 
                     "room": room, 
                     "ptype": "subscriber", 
-                    "feed": id, 
-					"private_id": pvtId ,
-					"data": true
+                    "streams":[
+						{
+							"feed":publisher.id
+						},
+					]
+					//"private_id": pvtId ,
+					//"data": true
                 };
 
 				if(Janus.webRTCAdapter.browserDetails.browser === "safari" &&
-						(video === "vp9" || (video === "vp8" && !Janus.safariVp8))) {
-					if(video)
-						video = video.toUpperCase()
+						(publisher.video_codec === "vp9" || (publisher.video_codec === "vp8" && !Janus.safariVp8))) {
+					if(publisher.video_codec)
+					publisher.video_codec = publisher.video_codec.toUpperCase()
 					subscribe["offer_video"] = false;
 				}
-				subscriberHandle.videoCodec = video;
+				subscriberHandle.videoCodec = publisher.video_codec;
+				console.log("subscribe to : ",subscribe);
 				subscriberHandle.send({"message": subscribe});
 			},
 			error: function(error) {
@@ -38,7 +43,7 @@ export function AttchSubscriberHandler(janus, opaqueId, room, id, pvtId, display
 			onmessage: function(msg, jsep) {
 				Janus.debug(" ::: Got a message (subscriber) :::");
                 Janus.debug(msg);
-                
+                console.log("**** get subscription ",jsep);
                 if(jsep !== undefined && jsep !== null) {
 					Janus.debug("SUBS: Handling SDP as well...");
                     Janus.debug(jsep);
@@ -63,7 +68,7 @@ export function AttchSubscriberHandler(janus, opaqueId, room, id, pvtId, display
 				
 			},
 			webrtcState: function(on) {
-				Janus.log("Janus says this WebRTC PeerConnection (feed #" + subscriberHandle.rfindex + ") is " + (on ? "up" : "down") + " now");
+				Janus.log("Janus says this WebRTC PeerConnection (feed #" + subscriberHandle.id + ") is " + (on ? "up" : "down") + " now");
 			},
 			onlocalstream: function(stream) {
 				// The subscriber stream is recvonly, we don't expect anything here
