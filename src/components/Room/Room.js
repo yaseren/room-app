@@ -51,7 +51,7 @@ const Room = ({ roomName, nickname }) => {
 
     const [server, setServer] = useState("wss://media.setup-infra.ir")
     const [janusInstance, setJanusInstance] = useState(null);
-    const [room, setRoom] = useState(parseInt(roomName.replace(/[^\d.]/g, '')));
+    const [room, setRoom] = useState(parseInt(roomName.replace(/[^\d.]/g, '')));//in final get room id from backend db
     const [id, setId] = useState(null);
     const [pvtId, setPvtId] = useState(null);
     const [chatroom, setChatroom] = useState(null);
@@ -236,7 +236,7 @@ const Room = ({ roomName, nickname }) => {
                         {/*  local webcam  */}
                         {/* //! subscriber  */}
 
-                       {/* {toSubscribe.length>0 && (<JanusVideoRoom janus={janusInstance}>
+                       {(toSubscribe) ? (<JanusVideoRoom janus={janusInstance}>
                             <JanusSubscriber
                                 opaqueId={apqueId}
                                 room={room}
@@ -244,7 +244,7 @@ const Room = ({ roomName, nickname }) => {
                                 pubPvtId={pvtId}
                                 subscribeList={toSubscribe}
                             />
-                        </JanusVideoRoom>)} */}
+                        </JanusVideoRoom>) : null}
 
                         {/* {feedStreams.length > 0 && (
                             <VideoGrid height={height} feedStreams={feedStreams} />

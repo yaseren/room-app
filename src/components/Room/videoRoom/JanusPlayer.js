@@ -32,16 +32,16 @@ const JanusPlayer = React.forwardRef((
                     <span style={{ color: "red" }}>{errorText ? readyText : 'Error'}</span>
                 )}
             </div> */}
-            
-           <video
+
+            <video
                 className="janus-video-player"
-                autoPlay
-                playsInline
-               muted={isPublisher}
-                
-                />
-           
-            
+                autoPlay={true}
+                playsInline={true}
+                muted
+
+            />
+
+
 
             {isPublisher && (
                 <div className="janus-video-controls">
