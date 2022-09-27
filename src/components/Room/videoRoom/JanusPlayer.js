@@ -34,10 +34,14 @@ const JanusPlayer = React.forwardRef((
             </div> */}
 
             <video
-                className="janus-video-player"
-                autoPlay={true}
-                playsInline={true}
-                muted
+                style={{
+                    height: "auto",
+                    width: "100%",
+                }}
+            className="janus-video-player"
+            autoPlay={true}
+            playsInline={true}
+            muted
 
             />
 

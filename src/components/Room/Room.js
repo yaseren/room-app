@@ -5,7 +5,7 @@ import Janus from './utils/janus';
 
 
 import { publishOwnFeed, unpublishOwnFeed, sendData, publishChatroom } from './utils/publisher';
-import JanusPlayer from './videoRoom/JanusPlayer'
+
 import JanusVideoRoom from './videoRoom/JanusVideoRoom'
 import JanusPublisher from './videoRoom/JanusPublisher'
 import JanusSubscriber from './videoRoom/JanusSubscriber'
@@ -20,7 +20,7 @@ import UserList from './componnets/Userlist';
 import ChatBox from './componnets/Chat';
 import AppBar from './componnets/Appbar';
 
-import VideoGrid from './grids/VideoGrid';
+
 
 const Room = ({ roomName, nickname }) => {
 
@@ -61,12 +61,16 @@ const Room = ({ roomName, nickname }) => {
     const [publishers, setPublishers] = useState([]);//total publishers
     const [subscriptions, setSubscriptions] = useState([]); // publishers list that subscriber
     const [toSubscribe, setToSubscribe] = useState([]); //publishers that is to be subscribed
+    const [usersList, setUsersList] = useState([{
+        id: 0,
+        name: nickname,
+    },]);
 
 
 
     const [isMuted, setIsMuted] = useState(false);
     const [isPublishingVideo, setVideoPublishing] = useState(false);
-    
+
     const [publisherHandler, setPublisherHandler] = useState(null);
     const [subscriberHandle, setSubscriberHandle] = useState(null);
 
@@ -122,7 +126,7 @@ const Room = ({ roomName, nickname }) => {
 
     useEffect(() => {
         detectrtc.load(() => {
-            console.log(detectrtc.version);
+
             if (detectrtc.isWebRTCSupported === false) {
                 console.log('Please use Chrome or Firefox.');
             }
@@ -147,6 +151,9 @@ const Room = ({ roomName, nickname }) => {
 
         }
         );
+
+
+
     }, [])
 
     //#endregion
@@ -195,12 +202,45 @@ const Room = ({ roomName, nickname }) => {
         console.log("roomId: " + room);
 
     }, [])
+
     useEffect(() => {
         console.log("list of publishers to subscribe: ", publishers);
+        if (publishers.length > 0) {
+
+            publishers.map((pub) => {
+                let user = { id: pub.id, name: pub.display };
+                addToUserList(user);
+            })
+
+            console.log("list of users to update", usersList);
+
+
+        }
+
         setToSubscribe(publishers);
 
 
     }, [publishers])
+
+
+    const addToUserList = (user) => {
+
+        let duser = usersList.find(u => {
+            return u.id === user.id;
+        })
+        if (!duser) {
+            setUsersList([...usersList, user]);
+        }
+
+    }
+    const removeFromUserList = (user) => {
+
+        let newUserList=usersList.filter(u=>{
+            return  u.id!==user.id
+        });
+
+        setUsersList(newUserList);
+    }
 
     return (
 
@@ -236,7 +276,7 @@ const Room = ({ roomName, nickname }) => {
                         {/*  local webcam  */}
                         {/* //! subscriber  */}
 
-                       {(toSubscribe) ? (<JanusVideoRoom janus={janusInstance}>
+                        <JanusVideoRoom janus={janusInstance}>
                             <JanusSubscriber
                                 opaqueId={apqueId}
                                 room={room}
@@ -244,7 +284,7 @@ const Room = ({ roomName, nickname }) => {
                                 pubPvtId={pvtId}
                                 subscribeList={toSubscribe}
                             />
-                        </JanusVideoRoom>) : null}
+                        </JanusVideoRoom>
 
                         {/* {feedStreams.length > 0 && (
                             <VideoGrid height={height} feedStreams={feedStreams} />
@@ -319,7 +359,7 @@ const Room = ({ roomName, nickname }) => {
                             ></JanusPublisher>
                         </JanusVideoRoom>
                         {/*  users list and chat and other panels come here  */}
-                        <UserList />
+                        <UserList usersList={usersList} />
                         <ChatBox />
                         {/*  users list and chat and other panels come here  */}
 

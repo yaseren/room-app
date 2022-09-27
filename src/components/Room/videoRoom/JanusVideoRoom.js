@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import Janus from '../utils/janus';
+import React, { useEffect } from 'react';
+
 
 const JanusVideoRoom = ({ children, janus, roomId }) => {
     useEffect(() => {

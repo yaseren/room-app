@@ -30,7 +30,7 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
                     setId(id);
                     setPvtId(private_id);
                     if(publishers){
-                        setPublishers(publishers[0]);
+                        setPublishers(publishers);
                     }
                   
                     setPlayerState("Paused");
@@ -40,7 +40,7 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
                     const videoPlayer = videoContainer.querySelector(".janus-video-player")
                    
                     if(mystream){
-                        setPublishers(mystream);
+                      //  setPublishers(mystream);
                     }
                     Janus.attachMediaStream(videoPlayer, mystream);
 

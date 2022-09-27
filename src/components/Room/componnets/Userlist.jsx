@@ -16,21 +16,20 @@ import PersonIcon from '@mui/icons-material/Person';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import PresentToAllIcon from '@mui/icons-material/PresentToAll';
 import { Button, ButtonGroup, Grid, IconButton, Stack, Tooltip } from '@mui/material';
-
-
-function generate(element) {
-    return [0, 1, 2, 3, 5].map((value) =>
-        React.cloneElement(element, { key: value, }),
-    );
-}
+import { useEffect } from 'react';
 
 
 
-export default function UserList() {
+
+
+
+export default function UserList({usersList}) {
     const [dense, setDense] = React.useState(true);
+    useEffect(()=>{
+console.log("List of users ",usersList);
+    },[usersList])
 
-
-    return (
+     return (
         <Box
 
             sx={{
@@ -48,8 +47,9 @@ export default function UserList() {
             height
         >
             <List sx={{ width: '100%' }} dense={dense}>
-                {generate(
-                    <li  className='user_row' >
+               {usersList.map(user=>
+                   
+                    <li  className='user_row' key={user.id} >
 
                         <Grid container >
                             <Grid item xs={4}>
@@ -68,8 +68,8 @@ export default function UserList() {
                             </Grid>
                             <Grid item xs={8}>
                                 <div size='small' className='user_name'>
-                                    <p>نام کاربر </p>
-                                    <Tooltip title="نام کاربر">
+                                    <p>{user.name}</p>
+                                    <Tooltip title={user.name}>
                                         <PersonIcon fontSize='small' />
 
                                     </Tooltip>
@@ -79,15 +79,9 @@ export default function UserList() {
                             </Grid>
                         </Grid>
 
-
-
-
-
-
-
-
-
                     </li>,
+                  
+                
                 )}
             </List>
         </Box>

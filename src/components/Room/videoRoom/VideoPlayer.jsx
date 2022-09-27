@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 
-import Janus from '../utils/janus';
+
 
 const VideoPlayer = ({ stream }) => {
     const videoPlayer = useRef(null);
@@ -15,10 +15,11 @@ const VideoPlayer = ({ stream }) => {
                 // const url = URL.createObjectURL(stream);
                 videoPlayer.current.srcObject = stream;
 
-                console.log(audioPlayer);
+                console.log(stream.getAudioTracks()[0]);
 
-                audioPlayer.current.srcObject=stream.getAudioTracks();
-            
+                audioPlayer.current.srcObject = stream;
+                // audioPlayer.play();
+
 
             }
 
@@ -29,32 +30,32 @@ const VideoPlayer = ({ stream }) => {
         // videoPlayer.current.muted=false;
     }, [stream])
 
-
-    // useEffect(() => {
-    //     console.log("unmute video ");
-    //     console.log(videoPlayer);
-    //    // videoPlayer.current.muted = false;
-      
-    // }, [])
-
-
     return (
-<>
-<video
-            ref={videoPlayer}
-            autoPlay={true}
-            playsInline
-            muted
+        <>
+            <video
 
 
-        />
+                style={{
+                    height: "auto",
+                    width: "65%",
+                    margin:'auto',
+                    borderRadius:'5%'
+                }}
 
-        <audio  ref={audioPlayer} autoPlay playsInline controls />
+                ref={videoPlayer}
+                autoPlay={true}
+                playsInline
+                muted
 
-        
 
-</>
-       
+            />
+
+            <audio ref={audioPlayer} autoPlay playsInline />
+
+
+
+        </>
+
 
 
     )
