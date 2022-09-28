@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 
+import Janus from '../utils/janus';
+
 
 
 
@@ -13,11 +15,19 @@ const VideoPlayer = ({ stream }) => {
                 console.log(stream);
                 //Janus.attachMediaStream(videoPlayer.current, stream);
                 // const url = URL.createObjectURL(stream);
-                videoPlayer.current.srcObject = stream;
-
-                console.log(stream.getAudioTracks()[0]);
-
-                audioPlayer.current.srcObject = stream;
+                if(stream.kind==="video"){
+                 let videoStream=new MediaStream([stream])
+                 console.log(videoStream);
+               // videoPlayer.current.srcObject = videoStream;
+                Janus.attachMediaStream(videoPlayer.current, videoStream);
+                }
+                if(stream.kind==="audio"){
+                    videoPlayer.current.hide();
+                    let audiostrm=new MediaStream([stream])
+                    Janus.attachMediaStream(audioPlayer.current, audiostrm);
+                    //audioPlayer.current.srcObject = [stream];
+                }
+                
                 // audioPlayer.play();
 
 
@@ -33,8 +43,6 @@ const VideoPlayer = ({ stream }) => {
     return (
         <>
             <video
-
-
                 style={{
                     height: "auto",
                     width: "65%",
@@ -45,7 +53,7 @@ const VideoPlayer = ({ stream }) => {
                 ref={videoPlayer}
                 autoPlay={true}
                 playsInline
-                muted
+                
 
 
             />

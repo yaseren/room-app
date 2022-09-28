@@ -135,10 +135,10 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                     }
                 }
             },
-            onlocalstream: function (stream) {
-                Janus.debug(" ::: Got a local stream :::");
-                mystream = stream;
-                callback(publishHandle, "onlocalstream", stream);
+            onlocaltrack: function (track,on) {
+                Janus.debug(" ::: Got a local stream :::",track);
+                mystream = track;
+                callback(publishHandle, "onlocaltrack", track);
             },
             onremotestream: function (stream) {
                 // The publisher stream is sendonly, we don't expect anything here

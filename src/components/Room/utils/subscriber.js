@@ -73,7 +73,12 @@ export function subscribeRemoteFeed(janus, opaqueId, room,publisher, callback) {
 			onlocalstream: function(stream) {
 				// The subscriber stream is recvonly, we don't expect anything here
 			},
-			onremotestream: function(stream) {
+			onremotetrack: function(track,mid,on) {
+				Janus.debug("Remote track (mid=" + mid + ") " + (on ? "added" : "removed") + ":", track);
+				let stream={
+					track ,mid,on
+				}
+				console.log(stream);
                 callback(subscriberHandle, "onremotestream", stream);
 			},
 			oncleanup: function() {

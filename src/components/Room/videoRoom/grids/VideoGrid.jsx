@@ -47,20 +47,22 @@ function VideoGrid({ height, sources }) {
         {sources.length > 0 ? (
           <>
             {
-              sources.map(i => {
+              sources.map((media) => {
                 return (
-                  <Col style={style} key={{ i }} md={getGrid(sources.length)}>
+                  <Col style={style} key={media.id} md={getGrid(sources.length)}>
                     <Card>
-                      <Card.Body style={{ Justify: "center" ,display:'flex',backgroundColor:'black' }} >
+                      <Card.Title>
+                        {media.label}
+                      </Card.Title>
+                      <Card.Body style={{ Justify: "center", display: 'flex', backgroundColor: 'black' }} >
                         <VideoPlayer
-                          stream={sources[0]}
+                          stream={media}
                         />
                         {/* <video loop autoPlay src='/videos/test.mp4' muted controls></video> */}
                       </Card.Body>
                     </Card>
                   </Col>
                 )
-
               })
             }
           </>

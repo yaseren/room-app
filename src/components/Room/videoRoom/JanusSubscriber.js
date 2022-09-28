@@ -16,10 +16,13 @@ const JanusSubscriber = ({ janus, opaqueId, room, pubId, pubPvtId, children, sub
     const remoteFeedCallback = (_remoteFeed, eventType, data) => {
         setRemoteFeed(_remoteFeed);
         if (eventType === "onremotestream") {
-            setRemoteStream(data);
+            let streams=remoteStream;
+            streams.push(data.track);
+            console.log("==",streams);
+            setRemoteStream(streams);
            // const videoContainer = videoArea.current;
             //const videoPlayer = videoContainer.querySelector(".janus-video-player")
-            console.log("remoot Stream ==>>", data);
+            console.log("remote Streams array ==>>", remoteStream);
            // Janus.attachMediaStream(videoPlayer, remoteStream);
            console.log("get tracks",data.getTracks());
           
@@ -53,8 +56,8 @@ const JanusSubscriber = ({ janus, opaqueId, room, pubId, pubPvtId, children, sub
 
     return (
         <>
-            {remoteStream != null ? (
-                <VideoGrid  sources={[remoteStream]} />
+            {remoteStream.length>0 ? (
+                <VideoGrid  sources={remoteStream} />
             ) : null}
         </>
 

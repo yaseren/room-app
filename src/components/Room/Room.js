@@ -72,6 +72,8 @@ const Room = ({ roomName, nickname }) => {
     const [isPublishingVideo, setVideoPublishing] = useState(false);
 
     const [publisherHandler, setPublisherHandler] = useState(null);
+    const [mystreams,setMyStreams]=useState([]);
+
     const [subscriberHandle, setSubscriberHandle] = useState(null);
 
     const [ispublisher, setIspublisher] = useState(false);
@@ -165,8 +167,11 @@ const Room = ({ roomName, nickname }) => {
     const publishOwnfeed = () => {
         if (isPublishingVideo) {
             setVideoPublishing(false);
+            console.log("unpublishing===== ");
+           
             setTimeout(() => {
                 unpublishOwnFeed(publisherHandler);
+                
             }, 500)
 
         } else {
@@ -356,6 +361,8 @@ const Room = ({ roomName, nickname }) => {
                                 setMystream={setMystream}
                                 startPublishsing={isPublishingVideo}
                                 setPublishers={setPublishers}
+                                mystreams={mystreams}
+                                setMyStreams={setMyStreams}
                             ></JanusPublisher>
                         </JanusVideoRoom>
                         {/*  users list and chat and other panels come here  */}

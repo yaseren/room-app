@@ -1,4 +1,4 @@
-import Janus from './janus';
+import Janus from './janus__';
 
 export function publishChatroom(janus, opaqueId, isPublisher, chatroomId, username, display, callback){
     let chatroomHandler;
