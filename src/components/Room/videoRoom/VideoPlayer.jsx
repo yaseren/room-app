@@ -7,8 +7,7 @@ import Janus from '../utils/janus';
 
 const VideoPlayer = ({ stream }) => {
     const videoPlayer = useRef(null);
-    const audioPlayer = useRef(null);
-
+  
     useEffect(() => {
         async function attachmedia() {
             if (stream) {
@@ -21,28 +20,20 @@ const VideoPlayer = ({ stream }) => {
                // videoPlayer.current.srcObject = videoStream;
                 Janus.attachMediaStream(videoPlayer.current, videoStream);
                 }
-                if(stream.kind==="audio"){
-                    videoPlayer.current.hide();
-                    let audiostrm=new MediaStream([stream])
-                    Janus.attachMediaStream(audioPlayer.current, audiostrm);
-                    //audioPlayer.current.srcObject = [stream];
-                }
-                
-                // audioPlayer.play();
-
-
+ 
             }
 
         }
-
-
         attachmedia();
         // videoPlayer.current.muted=false;
-    }, [stream])
+    }, [])
 
     return (
         <>
-            <video
+        {
+          
+            
+         <video
                 style={{
                     height: "auto",
                     width: "65%",
@@ -57,11 +48,8 @@ const VideoPlayer = ({ stream }) => {
 
 
             />
-
-            <audio ref={audioPlayer} autoPlay playsInline />
-
-
-
+        }
+           
         </>
 
 

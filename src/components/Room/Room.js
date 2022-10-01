@@ -48,6 +48,7 @@ const Room = ({ roomName, nickname }) => {
     const [hasSpeakers, sethasSpeakers] = useState(false)
 
     const [mystream, setMystream] = useState(null)
+  
 
     const [server, setServer] = useState("wss://media.setup-infra.ir")
     const [janusInstance, setJanusInstance] = useState(null);
@@ -247,6 +248,41 @@ const Room = ({ roomName, nickname }) => {
         setUsersList(newUserList);
     }
 
+    const video_panel_style={
+        overflow: "hidden",
+        marginTop: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        borderRadius: 2,
+        boxShadow: 3,
+        padding: 1,
+        m: 1,
+        backgroundColor: theme.palette.primary.dark,
+        color: theme.palette.text.light
+    }
+    const appbar_containet_style={
+        borderRadius: 2,
+        boxShadow: 0,
+        p: 0,
+        m: 1,
+        justifyItems: 'center',
+        justifyContent: 'center',
+
+    }
+    const side_bar_style={
+        marginTop: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        borderRadius: 2,
+        boxShadow: 3,
+        padding: 1,
+        m: 1,
+        backgroundColor: theme.palette.primary.dark,
+        color: theme.palette.text.light
+    }
+
     return (
 
         <ThemeProvider theme={theme}>
@@ -258,20 +294,7 @@ const Room = ({ roomName, nickname }) => {
                 }}>
                     <Box
                         maxWidth="xlg"
-                        sx={{
-                            overflow: "hidden",
-                            marginTop: 2,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            borderRadius: 2,
-                            boxShadow: 3,
-                            padding: 1,
-                            m: 1,
-                            backgroundColor: theme.palette.primary.dark,
-                            color: theme.palette.text.light
-
-                        }}
+                        sx={video_panel_style}
                         height
                         ref={vide_panel_ref}
                     >
@@ -288,29 +311,14 @@ const Room = ({ roomName, nickname }) => {
                                 pubId={id}
                                 pubPvtId={pvtId}
                                 subscribeList={toSubscribe}
+                              
                             />
                         </JanusVideoRoom>
 
-                        {/* {feedStreams.length > 0 && (
-                            <VideoGrid height={height} feedStreams={feedStreams} />
-                        )} */}
                     </Box>
                     <Box
 
-                        sx={{
-
-                            borderRadius: 2,
-                            boxShadow: 0,
-                            p: 0,
-                            m: 1,
-                            justifyItems: 'center',
-                            justifyContent: 'center',
-
-
-
-                        }}
-
-
+                        sx={appbar_containet_style}
                     >
                         {/* //! appbar */}
                         <AppBar
@@ -331,19 +339,7 @@ const Room = ({ roomName, nickname }) => {
                 }}>
                     <Box
                         maxWidth="xlg"
-                        sx={{
-                            marginTop: 2,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            borderRadius: 2,
-                            boxShadow: 3,
-                            padding: 1,
-                            m: 1,
-                            backgroundColor: theme.palette.primary.dark,
-                            color: theme.palette.text.light
-
-                        }}
+                        sx={side_bar_style}
                         height
                     >
                         {/*  local webcam  */}
@@ -374,9 +370,6 @@ const Room = ({ roomName, nickname }) => {
                 </Grid>
 
             </Grid>
-
-
-
         </ThemeProvider>
 
     )

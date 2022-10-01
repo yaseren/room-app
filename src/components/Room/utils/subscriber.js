@@ -79,7 +79,7 @@ export function subscribeRemoteFeed(janus, opaqueId, room,publisher, callback) {
 					track ,mid,on
 				}
 				console.log(stream);
-                callback(subscriberHandle, "onremotestream", stream);
+                callback(subscriberHandle, "onremotetrack", stream);
 			},
 			oncleanup: function() {
                 callback(subscriberHandle, "oncleanup");
