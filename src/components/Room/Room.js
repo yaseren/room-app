@@ -60,7 +60,7 @@ const Room = ({ roomName, nickname }) => {
     const [apqueId, setApqueId] = useState(Janus.randomString(12));
 
     const [publishers, setPublishers] = useState([]);//total publishers
-    const [subscriptions, setSubscriptions] = useState([]); // publishers list that subscriber
+    const [subscriptions, setSubscriptions] = useState([]); // publishers list thats are  subscribed
     const [toSubscribe, setToSubscribe] = useState([]); //publishers that is to be subscribed
     const [usersList, setUsersList] = useState([{
         id: 0,
@@ -210,7 +210,7 @@ const Room = ({ roomName, nickname }) => {
     }, [])
 
     useEffect(() => {
-        console.log("list of publishers to subscribe: ", publishers);
+       
         if (publishers.length > 0) {
 
             publishers.map((pub) => {
@@ -223,7 +223,18 @@ const Room = ({ roomName, nickname }) => {
 
         }
 
-        setToSubscribe(publishers);
+        // get list of publishers to subsctibe
+
+        let toSubscribe = publishers.filter(x => !subscriptions.includes(x));
+        let subscribed=subscriptions.concat(toSubscribe);
+
+
+
+        setSubscriptions(subscribed);
+        setToSubscribe(toSubscribe);
+        console.log("list of all publishers: ", publishers);
+        console.log("list of all publishers to subscribe: ", toSubscribe);
+
 
 
     }, [publishers])

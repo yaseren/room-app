@@ -36,9 +36,9 @@ const VideoPlayer = ({ stream }) => {
          <video
                 style={{
                     height: "auto",
-                    width: "65%",
+                  //  width: "65%",
                     margin:'auto',
-                    borderRadius:'5%'
+                    borderRadius:'5px'
                 }}
 
                 ref={videoPlayer}

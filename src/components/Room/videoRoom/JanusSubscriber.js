@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
-import { subscribeRemoteFeed, sendData } from '../utils/subscriber';
+import { subscribeRemoteFeed,attachRemoteFeed } from '../utils/subscriber';
 import VideoGrid from './grids/VideoGrid';
 import AudioPlayer from './AudioPlayer';
 
 
-const JanusSubscriber = ({ janus, opaqueId, room, pubId, pubPvtId, children, subscribeList }) => {
+const JanusSubscriber = ({ janus, opaqueId, room, pubId, pubPvtId, subscribeList }) => {
 
 
 
-    const [remoteFeed, setRemoteFeed] = useState(null);
+    const [remoteFeedHandler, setRemoteFeedHandler] = useState(null);
     // const [remoteStream, setRemoteStream] = useState([]);
     const [videoTracks, setVideoTracks] = useState([]);
     const [audioTracks, setAudioTracks] = useState([]);
 
+    const [startRemoveTracks,setStartRemovTracks]=useState(false);   
     const [trackRemoveQueue, setTrackRemoveQueue] = useState([]);
 
 
@@ -62,7 +63,7 @@ const JanusSubscriber = ({ janus, opaqueId, room, pubId, pubPvtId, children, sub
         list.push(mediaTrack);
         setTrackRemoveQueue(list);
         console.log("list of que to remove media track : ", trackRemoveQueue);
-        setTimeout(removeMediaTrack(), 5000)
+       setStartRemovTracks(true);
 
     }
 
@@ -90,6 +91,7 @@ const JanusSubscriber = ({ janus, opaqueId, room, pubId, pubPvtId, children, sub
             }
 
             clearQue(mediaTrack);
+            setStartRemovTracks(false)
            
 
         })
@@ -102,11 +104,11 @@ const JanusSubscriber = ({ janus, opaqueId, room, pubId, pubPvtId, children, sub
             return f.id !== mediaTrack.id
         })
         setTrackRemoveQueue(clearedque);
-        console.log("list of que to remove media track : ", trackRemoveQueue);
+        //console.log("list of que to remove media track : ", trackRemoveQueue);
     }
 
     const remoteFeedCallback = (_remoteFeed, eventType, data) => {
-        setRemoteFeed(_remoteFeed);
+        setRemoteFeedHandler(_remoteFeed);
         if (eventType === "onremotetrack") {
             if (data.on) {
                 addMediaTrack(data.track)
@@ -135,14 +137,24 @@ const JanusSubscriber = ({ janus, opaqueId, room, pubId, pubPvtId, children, sub
 
         }
     }
+    useEffect(()=>{
+        setTimeout(removeMediaTrack(), 5000)
+    },[startRemoveTracks])
 
     useEffect(() => {
         console.log("----------janus subscriber component useEffect executed: ", subscribeList);
         if (subscribeList.length > 0) {
-            let publisher = subscribeList[0];
-            console.log("publisher to register ", publisher);
-            const { id, display, audio_codec, video_codec } = publisher;
-            subscribeRemoteFeed(janus, opaqueId, room, publisher, remoteFeedCallback);
+            let publishers = subscribeList;
+            console.log("publisher to register ", publishers);
+           // const { id, display, audio_codec, video_codec } = publishers;
+        //    if(remoteFeedHandler){
+        //     subscribeRemoteFeed(remoteFeedHandler,publishers)
+        //     console.log("subscribe Only");
+        //    }else{
+            attachRemoteFeed(janus, opaqueId, room, publishers, remoteFeedCallback);
+            console.log("attach and Subscribe");
+
+          // }
         }
 
 
