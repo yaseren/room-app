@@ -5,7 +5,7 @@ import Janus from '../utils/janus';
 
 
 
-const VideoPlayer = ({ stream }) => {
+const VideoPlayer = ({ stream ,style}) => {
     const videoPlayer = useRef(null);
   
     useEffect(() => {
@@ -34,7 +34,7 @@ const VideoPlayer = ({ stream }) => {
           
             
          <video
-                style={{
+                style={style ? style :{
                     height: "auto",
                   //  width: "65%",
                     margin:'auto',

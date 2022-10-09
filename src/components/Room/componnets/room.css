@@ -2,6 +2,7 @@
 .user_row {
     display: flex;
     width: 100%;
+   overflow: hidden;
 }
 
 .user_name {
@@ -22,6 +23,37 @@
 .user_button_group {
     padding-left: 10px;
     float: left;
+}
+
+.user_header{
+    display: block;
+  
+    text-align: right;
+    font-size: 20px;
+    font-weight: normal;
+    color: #fff;
+    padding-right: 5px;
+}
+
+
+#user_box {
+    display: list-item;
+   padding: 10px 5px 25px 5px;
+    list-style-type: none;
+    /* overflow-y: scroll; */
+    height: 100%;
+    background: #18324d;
+    border-radius: 5px;
+    
+    overflow-x: hidden;
+    width: 100%;
+    /* -ms-overflow-style: none;  IE and Edge */
+    /*scrollbar-width: none;  Firefox */
+}
+
+#user_box ::-webkit-scrollbar{
+    display: none;
+
 }
 
 

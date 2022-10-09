@@ -8,83 +8,87 @@ import List from '@mui/material/List';
 import Box from '@mui/material/Box';
 
 
-import { ThemeProvider } from '@mui/material/styles';
+
 import { theme } from '../../../theme'
 
 import MicIcon from '@mui/icons-material/Mic';
 import PersonIcon from '@mui/icons-material/Person';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import PresentToAllIcon from '@mui/icons-material/PresentToAll';
-import { Button, ButtonGroup, Grid, IconButton, Stack, Tooltip } from '@mui/material';
+import { ButtonGroup, Grid, IconButton, Tooltip } from '@mui/material';
 import { useEffect } from 'react';
 
 
+export default function UserList({ userList }) {
+   
+    useEffect(() => {
+        console.log("List of users ", userList);
+    }, [userList])
 
+    return (
+        <>
 
+            <Box
 
+                sx={{
+                    display: 'inline-block',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    borderRadius: 2,
+                    boxShadow: 1,
 
-export default function UserList({usersList}) {
-    const [dense, setDense] = React.useState(true);
-    useEffect(()=>{
-console.log("List of users ",usersList);
-    },[usersList])
+                    // color: theme.palette.text.light,
+                    width: '100%', overflow: 'hidden',
 
-     return (
-        <Box
+                }}
+                height
+            >
+                <div className='user_header'>
+                    <div>
+                    <span style={{fontSize:'medium'}}>{userList.length}</span><PersonIcon fontSize='medium' />
+                    </div>
+                </div>
 
-            sx={{
-                marginTop: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                borderRadius: 2,
-                boxShadow: 1,
-                backgroundColor: theme.palette.primary.lighter,
-                color: theme.palette.text.light,
-                width: '100%', overflowY: 'scroll',
+                <ul id="user_box" >
+                    {userList.map(user =>
 
-            }}
-            height
-        >
-            <List sx={{ width: '100%' }} dense={dense}>
-               {usersList.map(user=>
-                   
-                    <li  className='user_row' key={user.id} >
+                        <li className='user_row' key={user.id} >
 
-                        <Grid container >
-                            <Grid item xs={4}>
-                                <div className='user_button_group'>
+                            <Grid container >
+                                <Grid item xs={4}>
+                                    <div className='user_button_group'>
 
-                                    <ButtonGroup variant="text"  >
-                                        <Tooltip title="میکروفن">
-                                            <IconButton><MicIcon className='user_icon' fontSize='small' /></IconButton>
+                                        <ButtonGroup variant="text"  >
+                                            <Tooltip title="میکروفن">
+                                                <IconButton><MicIcon className='user_icon' fontSize='small' /></IconButton>
+                                            </Tooltip>
+
+                                            <IconButton><VolumeUpIcon className='user_icon' fontSize='small' /></IconButton>
+                                            <IconButton><PresentToAllIcon className='user_icon' fontSize='small' /></IconButton>
+                                        </ButtonGroup>
+
+                                    </div>
+                                </Grid>
+                                <Grid item xs={8}>
+                                    <div size='small' className='user_name'>
+                                        <p>{user.name}</p>
+                                        <Tooltip title={user.name}>
+                                            <PersonIcon fontSize='small' />
+
                                         </Tooltip>
 
-                                        <IconButton><VolumeUpIcon className='user_icon' fontSize='small' /></IconButton>
-                                        <IconButton><PresentToAllIcon className='user_icon' fontSize='small' /></IconButton>
-                                    </ButtonGroup>
+                                    </div>
 
-                                </div>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={8}>
-                                <div size='small' className='user_name'>
-                                    <p>{user.name}</p>
-                                    <Tooltip title={user.name}>
-                                        <PersonIcon fontSize='small' />
 
-                                    </Tooltip>
+                        </li>
 
-                                </div>
+                    )}
+                </ul>
+            </Box>
+        </>
 
-                            </Grid>
-                        </Grid>
-
-                    </li>,
-                  
-                
-                )}
-            </List>
-        </Box>
     );
 }
 

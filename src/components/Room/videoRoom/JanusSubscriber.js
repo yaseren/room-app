@@ -163,7 +163,7 @@ const JanusSubscriber = ({ janus, opaqueId, room, pubId, pubPvtId, subscribeList
 
     return (
         <>
-            <p>videos: {videoTracks.length} audioTracks: {audioTracks.length}</p>
+            <span style={{fontSize:10}}>videos: {videoTracks.length} audios: {audioTracks.length}</span>
             <VideoGrid sources={videoTracks} />
 
             {

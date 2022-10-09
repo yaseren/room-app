@@ -16,7 +16,7 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
             opaqueId: opaqueId,
             success: function (pluginHandle) {
                 publishHandle = pluginHandle;
-                Janus.log("  -- This is a publisher/manager ss");
+                Janus.log("  -- This is a publisher/manager ss", pluginHandle);
                 //!start yass codes
                 if (isPublisher) {
                     let register = {
@@ -31,8 +31,8 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                 //! end yass code
 
 
-            //#region //! orgin codes
-                
+                //#region //! orgin codes
+
                 // if room is available
                 // if(isPublisher){    
                 //     const create = {
@@ -75,7 +75,7 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                 //     publishHandle.send({ message: register });
                 // }
 
-    //#endregion
+                //#endregion
             },
             error: function (error) {
                 Janus.log("  -- Error attaching plugin...", error);
@@ -98,6 +98,7 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
 
                 Janus.log("Got message", msg);
 
+
                 const event = msg.videoroom;
                 if (event !== undefined && event !== null) {
                     if (event === "joined") {
@@ -105,10 +106,16 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                     } else if (event === "destroyed") {
                         Janus.warn("The room has been destroyed!");
                         callback(publishHandle, "destroyed", event);
-                    } else if (event === "event") {
+                    }
+                    // else if (event === "paricipants") {
+                    //     Janus.warn("get list of participants ");
+                    //     callback(publishHandle, "paricipants", msg);
+                    // }  
+                    else if (event === "event") {
                         if (msg.error !== undefined && msg.error !== null) {
                             callback(publishHandle, "error", msg);
                         } else if (msg.publishers !== undefined && msg.publishers !== null) {
+                            Janus.log("Got list of publishers", msg.publishers);
                             callback(publishHandle, "publishers", msg);
                         } else if (msg["leaving"] !== undefined && msg["leaving"] !== null) {
                             callback(publishHandle, "leaving", msg);
@@ -116,6 +123,15 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                             callback(publishHandle, "unpublished", msg)
                         }
                     }
+                }
+
+                if (msg.joining) {
+
+                    callback(publishHandle, "joining", msg)
+                }
+                if (msg.leaving) {
+
+                    callback(publishHandle, "leaving", msg)
                 }
 
                 if (jsep !== undefined && jsep !== null) {
@@ -134,9 +150,10 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                         Janus.log("Our video stream has been rejected, viewers won't see us");
                     }
                 }
+
             },
-            onlocaltrack: function (track,on) {
-                Janus.debug(" ::: Got a local stream :::",track);
+            onlocaltrack: function (track, on) {
+                Janus.debug(" ::: Got a local stream :::", track);
                 mystream = track;
                 callback(publishHandle, "onlocaltrack", track);
             },
@@ -153,7 +170,7 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
     return publishHandle;
 }
 
-export function publishOwnFeed(publishHandle,useVideo, useAudio) {
+export function publishOwnFeed(publishHandle, useVideo, useAudio) {
     // Publish our stream
     publishHandle.createOffer(
         {
@@ -164,19 +181,20 @@ export function publishOwnFeed(publishHandle,useVideo, useAudio) {
                 Janus.debug("Got publisher SDP!");
                 Janus.debug(jsep);
 
-                var publish = { "request": "publish", "audio": useAudio, "video": useVideo };
+                // var publish = { "request": "publish", "audio": useAudio, "video": useVideo };
+                var publish = { "request": "publish" };
                 publishHandle.send({ "message": publish, "jsep": jsep });
             },
             error: function (error) {
                 Janus.error("WebRTC error:", error);
                 if (useAudio) {
-                    publishOwnFeed(publishHandle, false ,useAudio);
+                    publishOwnFeed(publishHandle, false, useAudio);
                     return;
                 } else {
                     Janus.log("Error publishing feed: " + error);
                     return
                 }
-               
+
             }
         });
 }
@@ -192,14 +210,14 @@ export function publishOwnAuidoFeed(publishHandle, useAudio) {
                 Janus.debug("Got publisher SDP!");
                 Janus.debug(jsep);
 
-                var publish = { "request": "publish", "audio": useAudio, "video": false };
+                var publish = { "request": "publish" };
                 publishHandle.send({ "message": publish, "jsep": jsep });
             },
             error: function (error) {
                 Janus.error("WebRTC error:", error);
-                
-                    Janus.log("Error publishing feed: " + error);
-                    return             
+
+                Janus.log("Error publishing feed: " + error);
+                return
             }
         });
 }

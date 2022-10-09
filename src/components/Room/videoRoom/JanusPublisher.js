@@ -8,7 +8,7 @@ import "./video-room.css";
 
 const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
     setPvtId, setId, children, publisherHandler, setPublisherHandler, startPublishsing,
-    setPublishers ,mystreams,setMyStreams}) => {
+    setPublishers,setAttendees ,mystreams,setMyStreams,addUser,removeUser}) => {
      
     
     // const [publisherHandler, setpublisherHandler] = useState(null);
@@ -31,6 +31,9 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
                     setPvtId(private_id);
                     if(publishers){
                         setPublishers(publishers);
+                    }
+                    if(attendees){
+                        setAttendees(attendees)
                     }
                   
                     
@@ -67,6 +70,21 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
                   
                    
                 }
+                
+                // else if (eventType==="paricipants"){
+                //     console.log("list of Participants",data.participants)
+                // }
+                else if (eventType==="joining"){
+                    console.log("user is joined===> ",data.joining)
+                    addUser({
+                        id:data.joining.id,
+                        name:data.joining.display
+                    })
+                }
+                else if (eventType==="leaving"){
+                    console.log("user is leaved===> ",data.leaving)
+                    removeUser(data.leaving)
+                }
             }
         )
 
@@ -101,7 +119,14 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
             >
                 {
                     mystreams.length>0 &&(
-                        <VideoPlayer stream={mystreams[0]}/>
+                        <VideoPlayer
+                         style={{
+                            height: "95%",
+                            margin: "auto",
+                            borderRadius: 5,
+                        }}
+                        
+                        stream={mystreams[0]}/>
                     )
                 }
                    

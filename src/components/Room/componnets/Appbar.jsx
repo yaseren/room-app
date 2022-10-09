@@ -102,6 +102,7 @@ return (
             {screen ? <ScreenShareIcon sx={{ color: '#8ac926' }} /> : <ScreenShareIcon />}
 
         </Button>
+       
         <Button variant="contained" component="label" onClick={handlRecord} >
             <RecordIcon sx={{ color: '#ff0000' }} /> {recording ? "recording" : "record"}
         </Button>

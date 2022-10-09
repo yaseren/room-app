@@ -48,7 +48,7 @@ const Room = ({ roomName, nickname }) => {
     const [hasSpeakers, sethasSpeakers] = useState(false)
 
     const [mystream, setMystream] = useState(null)
-  
+
 
     const [server, setServer] = useState("wss://media.setup-infra.ir")
     const [janusInstance, setJanusInstance] = useState(null);
@@ -62,10 +62,11 @@ const Room = ({ roomName, nickname }) => {
     const [publishers, setPublishers] = useState([]);//total publishers
     const [subscriptions, setSubscriptions] = useState([]); // publishers list thats are  subscribed
     const [toSubscribe, setToSubscribe] = useState([]); //publishers that is to be subscribed
-    const [usersList, setUsersList] = useState([{
-        id: 0,
-        name: nickname,
-    },]);
+    const [attendees, setAttendees] = useState([]); //list of attendees
+
+    const [usersList, setUsersList] = useState([]);
+    const [joinedUser, setJoinedUser] = useState(null)
+    const [leavedUserId, setLeavedUserId] = useState(null)
 
 
 
@@ -73,7 +74,7 @@ const Room = ({ roomName, nickname }) => {
     const [isPublishingVideo, setVideoPublishing] = useState(false);
 
     const [publisherHandler, setPublisherHandler] = useState(null);
-    const [mystreams,setMyStreams]=useState([]);
+    const [mystreams, setMyStreams] = useState([]);
 
     const [subscriberHandle, setSubscriberHandle] = useState(null);
 
@@ -162,6 +163,7 @@ const Room = ({ roomName, nickname }) => {
     //#endregion
     useEffect(() => {
         JanusInit();
+        setUsersList([{ id: 0, name: nickname }])
     }, []);
 
 
@@ -169,10 +171,10 @@ const Room = ({ roomName, nickname }) => {
         if (isPublishingVideo) {
             setVideoPublishing(false);
             console.log("unpublishing===== ");
-           
+
             setTimeout(() => {
                 unpublishOwnFeed(publisherHandler);
-                
+
             }, 500)
 
         } else {
@@ -185,9 +187,6 @@ const Room = ({ roomName, nickname }) => {
         }
 
     }
-
-
-
 
     const setMute = () => {
         if (!publisherHandler.isAudioMuted()) {
@@ -210,15 +209,15 @@ const Room = ({ roomName, nickname }) => {
     }, [])
 
     useEffect(() => {
-       
+
         if (publishers.length > 0) {
 
-            publishers.map((pub) => {
-                let user = { id: pub.id, name: pub.display };
-                addToUserList(user);
-            })
+            // publishers.map((pub) => {
+            //     let user = { id: pub.id, name: pub.display };
+            //     addToUserList(user);
+            // })
 
-            console.log("list of users to update", usersList);
+            // console.log("list of users to update", usersList);
 
 
         }
@@ -226,7 +225,7 @@ const Room = ({ roomName, nickname }) => {
         // get list of publishers to subsctibe
 
         let toSubscribe = publishers.filter(x => !subscriptions.includes(x));
-        let subscribed=subscriptions.concat(toSubscribe);
+        let subscribed = subscriptions.concat(toSubscribe);
 
 
 
@@ -237,29 +236,67 @@ const Room = ({ roomName, nickname }) => {
 
 
 
+
+
     }, [publishers])
 
+    useEffect(() => {
+        // add user to list in first login
 
-    const addToUserList = (user) => {
+        console.log("list of attendees = ", attendees);
 
-        let duser = usersList.find(u => {
-            return u.id === user.id;
-        })
-        if (!duser) {
-            setUsersList([...usersList, user]);
+        if (attendees.length > 0) {
+            let list = usersList;
+            attendees.forEach(({ id, display }) => {
+                list = [...list, { id, name: display }]
+                console.log("user added=>", id, display);
+
+            });
+
+            setUsersList([...list])
         }
 
+
+    }, [attendees])
+
+
+    const getUserList = () => {
+        if (publisherHandler) {
+            let request = {
+                "request": "listparticipants",
+                "room": room
+            }
+
+            publisherHandler.send({ "message": request });
+        }
     }
-    const removeFromUserList = (user) => {
 
-        let newUserList=usersList.filter(u=>{
-            return  u.id!==user.id
-        });
+    useEffect(() => {
+        if (joinedUser) {
+            //add user to list 
+            const { id, name } = joinedUser;
+            let list = usersList;
+            list = [...list, { id, name }]
+            setUsersList([...list])
+            //   const list = usersList.concat([{id, name}]);
+            // setUsersList(list);
+        }
 
-        setUsersList(newUserList);
-    }
+    }, [joinedUser])
 
-    const video_panel_style={
+    useEffect(() => {
+        // remove user from list
+        if (leavedUserId) {
+            let newUserList = usersList.filter(u => {
+                return u.id !== leavedUserId
+            });
+            setUsersList(newUserList);
+            console.log("userlist after remove ", newUserList);
+        }
+
+    }, [leavedUserId])
+
+    const video_panel_style = {
         overflow: "hidden",
         marginTop: 2,
         display: 'flex',
@@ -272,7 +309,7 @@ const Room = ({ roomName, nickname }) => {
         backgroundColor: theme.palette.primary.dark,
         color: theme.palette.text.light
     }
-    const appbar_containet_style={
+    const appbar_containet_style = {
         borderRadius: 2,
         boxShadow: 0,
         p: 0,
@@ -281,7 +318,7 @@ const Room = ({ roomName, nickname }) => {
         justifyContent: 'center',
 
     }
-    const side_bar_style={
+    const side_bar_style = {
         marginTop: 2,
         display: 'flex',
         flexDirection: 'column',
@@ -293,7 +330,7 @@ const Room = ({ roomName, nickname }) => {
         backgroundColor: theme.palette.primary.dark,
         color: theme.palette.text.light
     }
-
+  
     return (
 
         <ThemeProvider theme={theme}>
@@ -322,7 +359,7 @@ const Room = ({ roomName, nickname }) => {
                                 pubId={id}
                                 pubPvtId={pvtId}
                                 subscribeList={toSubscribe}
-                              
+
                             />
                         </JanusVideoRoom>
 
@@ -339,6 +376,7 @@ const Room = ({ roomName, nickname }) => {
                             publishCamera={publishOwnfeed}
                             setMute={setMute}
                             setUnMute={setUnMute}
+
 
                         />
 
@@ -368,12 +406,15 @@ const Room = ({ roomName, nickname }) => {
                                 setMystream={setMystream}
                                 startPublishsing={isPublishingVideo}
                                 setPublishers={setPublishers}
+                                setAttendees={setAttendees}
                                 mystreams={mystreams}
                                 setMyStreams={setMyStreams}
+                                addUser={setJoinedUser}
+                                removeUser={setLeavedUserId}
                             ></JanusPublisher>
                         </JanusVideoRoom>
                         {/*  users list and chat and other panels come here  */}
-                        <UserList usersList={usersList} />
+                        <UserList userList={usersList} />
                         <ChatBox />
                         {/*  users list and chat and other panels come here  */}
 
@@ -386,6 +427,5 @@ const Room = ({ roomName, nickname }) => {
     )
 
 }
-
 
 export default Room;
