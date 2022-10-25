@@ -4,11 +4,12 @@ import detectrtc from "detectrtc/DetectRTC";
 import Janus from './utils/janus';
 
 
-import { publishOwnFeed, unpublishOwnFeed, sendData, publishChatroom } from './utils/publisher';
+import { publishOwnFeed, unpublishOwnFeed, publishOwnScreenFeed } from './utils/publisher';
 
 import JanusVideoRoom from './videoRoom/JanusVideoRoom'
 import JanusPublisher from './videoRoom/JanusPublisher'
 import JanusSubscriber from './videoRoom/JanusSubscriber'
+import JanusChat from './componnets/JanusChat'
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -17,8 +18,9 @@ import Box from '@mui/material/Box';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../theme'
 import UserList from './componnets/Userlist';
-import ChatBox from './componnets/Chat';
+import ChatBox from './componnets/ChatBox';
 import AppBar from './componnets/Appbar';
+
 
 
 
@@ -47,17 +49,19 @@ const Room = ({ roomName, nickname }) => {
     const [hasWebcam, setHasWebcam] = useState(false)
     const [hasSpeakers, sethasSpeakers] = useState(false)
 
-    const [mystream, setMystream] = useState(null)
+
 
 
     const [server, setServer] = useState("wss://media.setup-infra.ir")
     const [janusInstance, setJanusInstance] = useState(null);
     const [room, setRoom] = useState(parseInt(roomName.replace(/[^\d.]/g, '')));//in final get room id from backend db
+    const [roomDesc, setRoomDesc] = useState("");
     const [id, setId] = useState(null);
     const [pvtId, setPvtId] = useState(null);
     const [chatroom, setChatroom] = useState(null);
     const [userName, setUserName] = useState(nickname);
     const [apqueId, setApqueId] = useState(Janus.randomString(12));
+    const [chatUserName, setChatUserName] = useState(Janus.randomString(12));
 
     const [publishers, setPublishers] = useState([]);//total publishers
     const [subscriptions, setSubscriptions] = useState([]); // publishers list thats are  subscribed
@@ -67,11 +71,13 @@ const Room = ({ roomName, nickname }) => {
     const [usersList, setUsersList] = useState([]);
     const [joinedUser, setJoinedUser] = useState(null)
     const [leavedUserId, setLeavedUserId] = useState(null)
-
+    const [unpublished, setUnpublished] = useState(null)
 
 
     const [isMuted, setIsMuted] = useState(false);
     const [isPublishingVideo, setVideoPublishing] = useState(false);
+
+    const [isPublishingScreen, setIsPublishingScreen] = useState(false);
 
     const [publisherHandler, setPublisherHandler] = useState(null);
     const [mystreams, setMyStreams] = useState([]);
@@ -166,11 +172,37 @@ const Room = ({ roomName, nickname }) => {
         setUsersList([{ id: 0, name: nickname }])
     }, []);
 
+    useEffect(() => {
+        document.title = roomDesc;
+
+    }, [roomDesc])
+
 
     const publishOwnfeed = () => {
         if (isPublishingVideo) {
             setVideoPublishing(false);
             console.log("unpublishing===== ");
+
+            // setTimeout(() => {
+            //     unpublishOwnFeed(publisherHandler);
+
+            // }, 500)
+
+        } else {
+            setVideoPublishing(true);
+            // setTimeout(() => {
+            //     publishOwnFeed(publisherHandler, true, true)
+            // }, 500)
+
+
+        }
+
+    }
+
+    const publishScreen = () => {
+        if (isPublishingScreen) {
+            setIsPublishingScreen(false);
+            console.log("unpublishing Screen ");
 
             setTimeout(() => {
                 unpublishOwnFeed(publisherHandler);
@@ -178,14 +210,13 @@ const Room = ({ roomName, nickname }) => {
             }, 500)
 
         } else {
-            setVideoPublishing(true);
+            setIsPublishingScreen(true);
             setTimeout(() => {
-                publishOwnFeed(publisherHandler, true, true)
+                publishOwnScreenFeed(publisherHandler, true)
             }, 500)
 
 
         }
-
     }
 
     const setMute = () => {
@@ -212,26 +243,30 @@ const Room = ({ roomName, nickname }) => {
 
         if (publishers.length > 0) {
 
-            // publishers.map((pub) => {
-            //     let user = { id: pub.id, name: pub.display };
-            //     addToUserList(user);
-            // })
+            let list = usersList;
+            publishers.forEach(({ id, display }) => {
+                let duser = usersList.find(u => {
+                    return u.id === id
+                })
+                if (!duser) {
+                    list = [...list, { id, name: display }]
+                    console.log("user added=>", id, display);
+                }
+            });
 
-            // console.log("list of users to update", usersList);
+            setUsersList([...list])
 
 
         }
 
         // get list of publishers to subsctibe
 
-        let toSubscribe = publishers.filter(x => !subscriptions.includes(x));
-        let subscribed = subscriptions.concat(toSubscribe);
+        // let toSubscribe = publishers.filter(x => !subscriptions.includes(x));
+        // let subscribed = subscriptions.concat(toSubscribe);
 
-
-
-        setSubscriptions(subscribed);
-        setToSubscribe(toSubscribe);
-        console.log("list of all publishers: ", publishers);
+        //setSubscriptions(subscribed);
+        setToSubscribe(publishers);
+        //console.log("list of all publishers: ", publishers);
         console.log("list of all publishers to subscribe: ", toSubscribe);
 
 
@@ -241,15 +276,21 @@ const Room = ({ roomName, nickname }) => {
     }, [publishers])
 
     useEffect(() => {
-        // add user to list in first login
+        // add user to list in first login list of attendees
 
         console.log("list of attendees = ", attendees);
 
         if (attendees.length > 0) {
             let list = usersList;
             attendees.forEach(({ id, display }) => {
-                list = [...list, { id, name: display }]
-                console.log("user added=>", id, display);
+                let duser = usersList.find(u => {
+                    return u.id === id
+                })
+                if (!duser) {
+                    list = [...list, { id, name: display }]
+                    console.log("user added=>", id, display);
+                }
+
 
             });
 
@@ -275,9 +316,14 @@ const Room = ({ roomName, nickname }) => {
         if (joinedUser) {
             //add user to list 
             const { id, name } = joinedUser;
-            let list = usersList;
-            list = [...list, { id, name }]
-            setUsersList([...list])
+            let duser = usersList.find(u => {
+                return u.id === id
+            })
+            if (!duser) {
+                let list = usersList;
+                list = [...list, { id, name }]
+                setUsersList([...list])
+            }
             //   const list = usersList.concat([{id, name}]);
             // setUsersList(list);
         }
@@ -298,7 +344,7 @@ const Room = ({ roomName, nickname }) => {
 
     const video_panel_style = {
         overflow: "hidden",
-        marginTop: 2,
+        marginTop: 1,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -319,7 +365,7 @@ const Room = ({ roomName, nickname }) => {
 
     }
     const side_bar_style = {
-        marginTop: 2,
+        marginTop: 1,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -330,11 +376,12 @@ const Room = ({ roomName, nickname }) => {
         backgroundColor: theme.palette.primary.dark,
         color: theme.palette.text.light
     }
-  
+
     return (
 
         <ThemeProvider theme={theme}>
             <Grid container sx={{ flexGrow: 1 }} height style={{ overflow: "hidden" }} >
+
                 <Grid xs={12} md={9} sx={{
                     height: '85%',
                     p: 1
@@ -352,16 +399,23 @@ const Room = ({ roomName, nickname }) => {
                         {/*  local webcam  */}
                         {/* //! subscriber  */}
 
-                        <JanusVideoRoom janus={janusInstance}>
+                        {janusInstance != null && (
                             <JanusSubscriber
+                                janus={janusInstance}
                                 opaqueId={apqueId}
                                 room={room}
                                 pubId={id}
                                 pubPvtId={pvtId}
-                                subscribeList={toSubscribe}
+                               // publishers={toSubscribe}
+                               publishers={[]}
+                                roomTitle={roomDesc}
+                               //unpublished={unpublished}
+                               unpublished={{}}
 
                             />
-                        </JanusVideoRoom>
+                        )}
+
+
 
                     </Box>
                     <Box
@@ -376,6 +430,7 @@ const Room = ({ roomName, nickname }) => {
                             publishCamera={publishOwnfeed}
                             setMute={setMute}
                             setUnMute={setUnMute}
+                            publishScreen={publishScreen}
 
 
                         />
@@ -393,8 +448,10 @@ const Room = ({ roomName, nickname }) => {
                     >
                         {/*  local webcam  */}
                         {/* //! publisher  */}
-                        <JanusVideoRoom janus={janusInstance}>
+
+                        {janusInstance != null && (
                             <JanusPublisher
+                                janus={janusInstance}
                                 publisherHandler={publisherHandler}
                                 setPublisherHandler={setPublisherHandler}
                                 room={room}
@@ -403,7 +460,7 @@ const Room = ({ roomName, nickname }) => {
                                 username={userName}
                                 setId={setId}
                                 setPvtId={setPvtId}
-                                setMystream={setMystream}
+
                                 startPublishsing={isPublishingVideo}
                                 setPublishers={setPublishers}
                                 setAttendees={setAttendees}
@@ -411,11 +468,26 @@ const Room = ({ roomName, nickname }) => {
                                 setMyStreams={setMyStreams}
                                 addUser={setJoinedUser}
                                 removeUser={setLeavedUserId}
-                            ></JanusPublisher>
-                        </JanusVideoRoom>
+                                setRoomDescription={setRoomDesc}
+
+                                setUnpublished={setUnpublished}
+                            />
+
+                        )}
+
+
                         {/*  users list and chat and other panels come here  */}
                         <UserList userList={usersList} />
-                        <ChatBox />
+                        <JanusChat
+                            janus={janusInstance}
+                            opaqueId={apqueId}
+                            isPublisher={false}
+                            chatroom={room}
+                            //   setChatroom={setChatroom}
+                            username={chatUserName.toString()}
+                            display={nickname}
+
+                        />
                         {/*  users list and chat and other panels come here  */}
 
                     </Box>

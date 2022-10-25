@@ -8,9 +8,9 @@ import "./video-room.css";
 
 const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
     setPvtId, setId, children, publisherHandler, setPublisherHandler, startPublishsing,
-    setPublishers,setAttendees ,mystreams,setMyStreams,addUser,removeUser}) => {
-     
-    
+    setPublishers, setAttendees, addUser, removeUser, setRoomDescription ,setUnpublished }) => {
+
+    const [mystream, setMystream] = useState(null)
     // const [publisherHandler, setpublisherHandler] = useState(null);
 
     const videoArea = useRef(null);
@@ -20,69 +20,75 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
         console.log("----------janus publisher component useEffect executed");
         AttchPublisherHandler(janus, opaqueId, room, secret, pin, username, true,
             (_publisherHandler, eventType, data) => {
-               
+
                 setPublisherHandler(_publisherHandler)
                 if (eventType === "created") {
                     setRoom(data.room);
                 } else if (eventType === "joined") {
-                    const { id, private_id ,publishers,attendees} = data;
+                    const { id, private_id, publishers, attendees, description } = data;
 
+                    setRoomDescription(description)
                     setId(id);
                     setPvtId(private_id);
-                    if(publishers){
+                    if (publishers) {
                         setPublishers(publishers);
                     }
-                    if(attendees){
+                    if (attendees) {
                         setAttendees(attendees)
                     }
-                  
-                    
+
+
                 } else if (eventType === "onlocaltrack") {
 
-                    if(data.kind==="video"){
-                       
-                        setMyStreams([data])
+                    if (data.track.kind === "video" && data.on) {
+                        setMystream(data.track)
+                    } else if (data.kind === "video" && !data.on) {
+                        setMystream(null)
+                        unpublishOwnFeed(publisherHandler);
                     }
-                   
-                    console.log("local tracks ====>",mystreams,data );
-                
+
+                    console.log("local tracks ====>", mystream, data);
+
 
                     if (_publisherHandler.webrtcStuff.pc.iceConnectionState !== "completed" &&
                         _publisherHandler.webrtcStuff.pc.iceConnectionState !== "connected") {
-                        
+
                     }
-                    var videoTracks = mystreams[0].getVideoTracks();
+                    var videoTracks = mystream[0].getVideoTracks() || null;
                     if (videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
-                       
+
                     }
                 } else if (eventType === "oncleanup") {
-                   
-                  
+
+
                 } else if (eventType === "error") {
-                   
-                  
-                }else if (eventType === "publishers") {
-                   
-                   let {publishers}=data;        
-                    if(publishers){
+
+
+                } else if (eventType === "publishers") {
+
+                    let { publishers } = data;
+                    if (publishers) {
                         setPublishers(publishers);
                     }
-                  
-                   
+
+
+                }else if(eventType==="unpublished"){
+                    Janus.log("a publisherr unpublished:  ", data.unpublished);
+                    setUnpublished(data.unpublished);
                 }
-                
+
                 // else if (eventType==="paricipants"){
                 //     console.log("list of Participants",data.participants)
                 // }
-                else if (eventType==="joining"){
-                    console.log("user is joined===> ",data.joining)
+                else if (eventType === "joining") {
+                    console.log("user is joined===> ", data.joining)
                     addUser({
-                        id:data.joining.id,
-                        name:data.joining.display
+                        id: data.joining.id,
+                        name: data.joining.display
                     })
                 }
-                else if (eventType==="leaving"){
-                    console.log("user is leaved===> ",data.leaving)
+                else if (eventType === "leaving") {
+                    console.log("user is leaved===> ", data.leaving)
                     removeUser(data.leaving)
                 }
             }
@@ -90,13 +96,33 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
 
     }, [janus])
 
- 
-  
+
+
+    useEffect(() => {
+
+        if (startPublishsing) {
+            setTimeout(() => {
+                publishOwnFeed(publisherHandler, true, true)
+            }, 500)
+
+        } else {
+            setTimeout(() => {
+                unpublishOwnFeed(publisherHandler);
+
+            }, 500)
+
+            setMystream(null)
+
+        }
+    }
+
+        , [startPublishsing])
+
     const onBandwidthChange = (bitrate) => {
         publisherHandler.send({ "message": { "request": "configure", "bitrate": bitrate } });
     }
 
-   
+
 
 
     if (startPublishsing) {
@@ -118,18 +144,18 @@ const JanusPublisher = ({ janus, opaqueId, room, secret, pin, username, setRoom,
                 height
             >
                 {
-                    mystreams.length>0 &&(
+                    mystream && (
                         <VideoPlayer
-                         style={{
-                            height: "95%",
-                            margin: "auto",
-                            borderRadius: 5,
-                        }}
-                        
-                        stream={mystreams[0]}/>
+                            style={{
+                                height: "95%",
+                                margin: "auto",
+                                borderRadius: 5,
+                            }}
+
+                            stream={mystream} />
                     )
                 }
-                   
+
             </Box>
 
         )

@@ -1,5 +1,4 @@
-import Janus from './janus__';
-
+import Janus from './janus'
 export function publishChatroom(janus, opaqueId, isPublisher, chatroomId, username, display, callback){
     let chatroomHandler;
     
@@ -35,7 +34,8 @@ export function publishChatroom(janus, opaqueId, isPublisher, chatroomId, userna
                     chatroomHandler.createAnswer(
                         {
                             jsep: jsep,
-                            media: { audio: false, video: false, data: true },	// We only use datachannels
+                           // media: { audio: false, video: false, data: true },	// We only use datachannels
+                           tracks: [{ type: 'data' }],
                             success: function(jsep) {
                                 Janus.debug("Got SDP!");
                                 Janus.debug(jsep);

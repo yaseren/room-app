@@ -12,13 +12,18 @@ export function attachRemoteFeed(janus, opaqueId, room, publishers, callback) {
 				subscriberHandle.simulcastStarted = false;
 				Janus.log("Plugin attached! (" + subscriberHandle.getPlugin() + ", id=" + subscriberHandle.getId() + ")");
 				Janus.log("  -- This is a subscriber");
+				Janus.log("List of Publisher to subscribe ",publishers);
 
 				let streams = [];
 
 				publishers.forEach(publisher => {
+					let pstream = publisher.stream;
 					streams.push({
-						"feed": publisher.id
+						"feed": publisher.id,
+						"mid": pstream.mid,
 					})
+				
+
 				});
 
 
@@ -58,7 +63,9 @@ export function attachRemoteFeed(janus, opaqueId, room, publishers, callback) {
 							jsep: jsep,
 							// Add data:true here if you want to subscribe to datachannels as well
 							// (obviously only works if the publisher offered them in the first place)
-							media: { audioSend: false, videoSend: false },	// We want recvonly audio/video
+							//	media: { audioSend: false, videoSend: false },	// We want recvonly audio/video
+						//	tracks: [		{ type: 'data' }],
+							tracks: [],
 							success: function (jsep) {
 								Janus.debug("Got SDP!");
 								Janus.debug(jsep);
@@ -71,6 +78,37 @@ export function attachRemoteFeed(janus, opaqueId, room, publishers, callback) {
 						});
 				}
 
+				const event = msg.videoroom;
+                if (event !== undefined && event !== null) {
+                    if (event === "joined") {
+                        callback(subscriberHandle, "joined", msg)
+                    } else if (event === "destroyed") {
+                        Janus.warn("The room has been destroyed!");
+                        callback(subscriberHandle, "destroyed", event);
+                    }
+                    // else if (event === "paricipants") {
+                    //     Janus.warn("get list of participants ");
+                    //     callback(publishHandle, "paricipants", msg);
+                    // }  
+                    else if (event === "event") {
+                        if (msg.error !== undefined && msg.error !== null) {
+                            callback(subscriberHandle, "error", msg);
+                        } else if (msg.publishers !== undefined && msg.publishers !== null) {
+                            Janus.log("Got list of publishers", msg.publishers);
+                            callback(subscriberHandle, "publishers", msg);
+                        } else if (msg["leaving"] !== undefined && msg["leaving"] !== null) {
+                            Janus.log("a user left ", msg);
+
+                            callback(subscriberHandle, "leaving", msg);
+                        } else if (msg["unpublished"] !== undefined && msg["unpublished"] !== null) {
+                            Janus.log("publisher Unpublished", msg);
+                           
+                            callback(subscriberHandle, "unpublished", msg)
+                        }
+                    }
+                }
+
+
 			},
 			webrtcState: function (on) {
 				Janus.log("Janus says this WebRTC PeerConnection (feed #" + subscriberHandle.id + ") is " + (on ? "up" : "down") + " now");
@@ -79,7 +117,7 @@ export function attachRemoteFeed(janus, opaqueId, room, publishers, callback) {
 				// The subscriber stream is recvonly, we don't expect anything here
 			},
 			onremotetrack: function (track, mid, on) {
-				Janus.debug("Remote track (mid=" + mid + ") " + (on ? "added" : "removed") + ":", track);
+				Janus.log("Remote track (mid=" + mid + ") " + (on ? "added" : "removed") + ":", track);
 				let stream = {
 					track, mid, on
 				}
@@ -97,12 +135,16 @@ export function subscribeRemoteFeed(pluginHandle, publishers) {
 	let streams = [];
 
 	publishers.forEach(publisher => {
+		let pstream = publisher.stream;
 		streams.push({
-			"feed": publisher.id
+			"feed": publisher.id,
+			"mid": pstream.mid,
 		})
+		
+
 	});
 
-
+	console.log("subscribe to : ", streams);
 	pluginHandle.send({
 		'message': {
 			'request': 'subscribe',
@@ -110,5 +152,5 @@ export function subscribeRemoteFeed(pluginHandle, publishers) {
 		}
 	})
 
-	return ;
+	return;
 }

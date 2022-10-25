@@ -112,11 +112,14 @@
     list-style-type: none;
     overflow-y: scroll;
     height: 70%;
+    width: 98%;
     border: #18324d solid 1px;
     background: #21446a;
     border-radius: 5px;
     margin: 5px;
     overflow-x: hidden;
+    scroll-behavior: smooth;
+
 }
 
 #chat_box::-webkit-scrollbar {
@@ -198,7 +201,7 @@
     background: #18324d;
 }
 
-.chat_footer textarea {
+.chat_footer input {
     resize: none;
     border: none;
     display: block;
@@ -212,7 +215,7 @@
     float: right;
 }
 
-.chat_main .chat_footer textarea::placeholder {
+.chat_main .chat_footer input::placeholder {
     color: #0e2a47;
 }
 

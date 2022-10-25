@@ -120,6 +120,7 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                         } else if (msg["leaving"] !== undefined && msg["leaving"] !== null) {
                             callback(publishHandle, "leaving", msg);
                         } else if (msg["unpublished"] !== undefined && msg["unpublished"] !== null) {
+                           
                             callback(publishHandle, "unpublished", msg)
                         }
                     }
@@ -140,22 +141,22 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
                     publishHandle.handleRemoteJsep({ jsep: jsep });
                     // Check if any of the media we wanted to publish has
                     // been rejected (e.g., wrong or unsupported codec)
-                    var audio = msg["audio_codec"];
-                    if (mystream && mystream.getAudioTracks() && mystream.getAudioTracks().length > 0 && !audio) {
-                        // Audio has been rejected
-                        Janus.log("Our audio stream has been rejected, viewers won't hear us");
-                    }
-                    var video = msg["video_codec"];
-                    if (mystream && mystream.getVideoTracks() && mystream.getVideoTracks().length > 0 && !video) {
-                        Janus.log("Our video stream has been rejected, viewers won't see us");
-                    }
+                    //var audio = msg["audio_codec"];
+                    // if (mystream && mystream.getAudioTracks() && mystream.getAudioTracks().length > 0 && !audio) {
+                    //     // Audio has been rejected
+                    //     Janus.log("Our audio stream has been rejected, viewers won't hear us");
+                    // }
+                    // var video = msg["video_codec"];
+                    // if (mystream && mystream.getVideoTracks() && mystream.getVideoTracks().length > 0 && !video) {
+                    //     Janus.log("Our video stream has been rejected, viewers won't see us");
+                    // }
                 }
 
             },
             onlocaltrack: function (track, on) {
                 Janus.debug(" ::: Got a local stream :::", track);
-                mystream = track;
-                callback(publishHandle, "onlocaltrack", track);
+                mystream = { track, on };
+                callback(publishHandle, "onlocaltrack", mystream);
             },
             onremotestream: function (stream) {
                 // The publisher stream is sendonly, we don't expect anything here
@@ -172,17 +173,31 @@ export function AttchPublisherHandler(janus, opaqueId, room, secret,
 
 export function publishOwnFeed(publishHandle, useVideo, useAudio) {
     // Publish our stream
+
+    // We want sendonly audio and video (uncomment the data track
+    // too if you want to publish via datachannels as well)
+    let tracks = [];
+    if (useAudio)
+        tracks.push({ type: 'audio', capture: true, recv: false });
+    tracks.push({ type: 'video', capture: true, recv: false, simulcast: false });
+    //~ tracks.push({ type: 'data' });
+
     publishHandle.createOffer(
         {
             // Add data:true here if you want to publish datachannels as well
-            media: { audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: useVideo },
-            simulcast: false,
+            //media: { audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: useVideo },
+            tracks: tracks,
+            // simulcast: false,
             success: function (jsep) {
                 Janus.debug("Got publisher SDP!");
                 Janus.debug(jsep);
 
                 // var publish = { "request": "publish", "audio": useAudio, "video": useVideo };
-                var publish = { "request": "publish" };
+                let publish = { request: "publish", audio: useAudio, video: useVideo };
+                // if(acodec)
+                // 	publish["audiocodec"] = acodec;
+                // if(vcodec)
+                // 	publish["videocodec"] = vcodec;
                 publishHandle.send({ "message": publish, "jsep": jsep });
             },
             error: function (error) {
@@ -211,6 +226,34 @@ export function publishOwnAuidoFeed(publishHandle, useAudio) {
                 Janus.debug(jsep);
 
                 var publish = { "request": "publish" };
+                publishHandle.send({ "message": publish, "jsep": jsep });
+            },
+            error: function (error) {
+                Janus.error("WebRTC error:", error);
+
+                Janus.log("Error publishing feed: " + error);
+                return
+            }
+        });
+}
+
+export function publishOwnScreenFeed(publishHandle, useAudio) {
+    // Publish our screen
+
+    let tracks = [];
+    if (useAudio)
+        tracks.push({ type: 'audio', capture: true, recv: false });
+    tracks.push({ type: 'screen', capture: true, recv: false });
+    publishHandle.createOffer(
+        {
+            // Add data:true here if you want to publish datachannels as well
+            tracks: tracks,
+            // simulcast: false,
+            success: function (jsep) {
+                Janus.debug("Got publisher SDP!");
+                Janus.debug(jsep);
+
+                var publish = { "request": "configure", audio: true, video: true };
                 publishHandle.send({ "message": publish, "jsep": jsep });
             },
             error: function (error) {

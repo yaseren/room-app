@@ -4,12 +4,16 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 
 import VideoPlayer from '../VideoPlayer';
-import styles from  './VideoGrid.module.css'
+import styles from './VideoGrid.module.css'
 import { useEffect } from 'react';
 
+
 function VideoGrid({ height, sources }) {
+
   useEffect(() => {
-    console.log(sources);
+    console.log("list of videos: ", sources);
+   
+
   }, [sources])
 
   const style = {
@@ -47,16 +51,16 @@ function VideoGrid({ height, sources }) {
         {sources.length > 0 ? (
           <>
             {
-              sources.map((media) => {
+              sources.map((feed) => {
                 return (
-                  <Col style={style} key={media.id} md={getGrid(sources.length)}>
+                  <Col style={style} key={feed.id} md={getGrid(sources.length)}>
                     <Card>
                       <Card.Title>
-                        {media.label}
+                        {feed.display}
                       </Card.Title>
                       <Card.Body style={{ Justify: "center", display: 'flex', backgroundColor: 'black' }} >
                         <VideoPlayer
-                          stream={media}
+                          stream={feed.track}
                         />
                         {/* <video loop autoPlay src='/videos/test.mp4' muted controls></video> */}
                       </Card.Body>

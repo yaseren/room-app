@@ -5,8 +5,7 @@ import './Appbar.css'
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../../theme'
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
+
 import Stack from '@mui/material/Stack';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import MicIcon from '@mui/icons-material/Mic';
@@ -18,7 +17,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
-export default function Appbar({ publishCamera, setMute, setUnMute, hasMic, hasWebcam, hasSpeakers }) {
+export default function Appbar({ publishCamera, setMute, setUnMute, hasMic, hasWebcam, hasSpeakers, publishScreen }) {
     const [recording, setRecording] = React.useState(false);
     const [mic, setMic] = React.useState(false);
     const [camera, setCamera] = React.useState(false);
@@ -58,58 +57,66 @@ export default function Appbar({ publishCamera, setMute, setUnMute, hasMic, hasW
 
     }
     const handleAudio = () => { audio ? setAudio(false) : setAudio(true) }
-    const handleScreen = () => { screen ? setScreen(false) : setScreen(true) }
-    
- 
-return (
-    <ThemeProvider theme={theme}>
-    <Stack className='appbar' direction="row" alignItems="center" spacing={2} style={{
-        justifyContent: 'center',
-        height: 80,
-        backgroundColor: theme.palette.primary.dark,
-        color: theme.palette.text.light,
-    }}>
-        <Button variant="contained" component="label">
-            <LogoutIcon onClick={()=>{window.location.reload()}} />
-        </Button>
-        {hasMic && (
-            <Button variant="contained" component="label" onClick={handlMic}>
-                {mic ? <MicIcon sx={{ color: '#8ac926' }} /> : <MicOffIcon />}
-
-            </Button>
-
-        )}
-
-        {hasWebcam && (
-
-            <Button variant="contained" component="label" onClick={handleCamera}>
-                {camera ? <VideocamIcon sx={{ color: '#8ac926' }} /> : <VideocamOffIcon />}
-
-            </Button>
-        )}
-
-        {hasSpeakers && (
-
-            <Button variant="contained" component="label" onClick={handleAudio}>
-                {audio ? <VolumeUpIcon sx={{ color: '#8ac926' }} /> : <VolumeOffIcon />}
-
-            </Button>
-        )}
+    const handleScreen = () => {
+        if (screen) {
+            setScreen(false);
+            publishScreen(false);
+        } else {
+            setScreen(true);
+            publishScreen(true);
+        }
+    }
 
 
+    return (
+        <ThemeProvider theme={theme}>
+            <Stack className='appbar' direction="row" alignItems="center" spacing={2} style={{
+                justifyContent: 'center',
+                height: 80,
+                backgroundColor: theme.palette.primary.dark,
+                color: theme.palette.text.light,
+            }}>
+                <Button variant="contained" component="label">
+                    <LogoutIcon onClick={() => { window.location.reload() }} />
+                </Button>
+                {hasMic && (
+                    <Button variant="contained" component="label" onClick={handlMic}>
+                        {mic ? <MicIcon sx={{ color: '#8ac926' }} /> : <MicOffIcon />}
 
-        <Button variant="contained" component="label" onClick={handleScreen}>
-            {screen ? <ScreenShareIcon sx={{ color: '#8ac926' }} /> : <ScreenShareIcon />}
+                    </Button>
 
-        </Button>
-       
-        <Button variant="contained" component="label" onClick={handlRecord} >
-            <RecordIcon sx={{ color: '#ff0000' }} /> {recording ? "recording" : "record"}
-        </Button>
+                )}
+
+                {hasWebcam && (
+
+                    <Button variant="contained" component="label" onClick={handleCamera}>
+                        {camera ? <VideocamIcon sx={{ color: '#8ac926' }} /> : <VideocamOffIcon />}
+
+                    </Button>
+                )}
+
+                {hasSpeakers && (
+
+                    <Button variant="contained" component="label" onClick={handleAudio}>
+                        {audio ? <VolumeUpIcon sx={{ color: '#8ac926' }} /> : <VolumeOffIcon />}
+
+                    </Button>
+                )}
 
 
 
-    </Stack>
-    </ThemeProvider>
-);
+                <Button variant="contained" component="label" onClick={handleScreen}>
+                    {screen ? <ScreenShareIcon sx={{ color: '#8ac926' }} /> : <ScreenShareIcon />}
+
+                </Button>
+
+                <Button variant="contained" component="label" onClick={handlRecord} >
+                    <RecordIcon sx={{ color: '#ff0000' }} /> {recording ? "recording" : "record"}
+                </Button>
+
+
+
+            </Stack>
+        </ThemeProvider>
+    );
 }
